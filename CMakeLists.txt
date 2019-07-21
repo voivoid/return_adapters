@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.15)
 
 project(ReturnAdapters LANGUAGES CXX)
 
@@ -18,4 +18,17 @@ option(RETURN_ADAPTERS_BUILD_TESTS "Build unit tests" ON)
 if(RETURN_ADAPTERS_BUILD_TESTS)
   enable_testing()
   add_subdirectory(tests)
+endif()
+
+
+
+
+find_program(ClangFormat clang-format)
+if(ClangFormat)
+  get_target_property(LibSources return_adapters INTERFACE_SOURCES)
+  get_target_property(TestSources return_adapters_tests SOURCES)
+
+  add_custom_target(clangformat
+    COMMAND clang-format -style=file -i ${LibSources} ${TestSources}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
