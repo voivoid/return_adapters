@@ -23,6 +23,22 @@ void try_to_do_things( const bool should_throw )
     throw std::runtime_error( "test exception" );
   }
 }
+
+template <auto* adaptee_func, typename Ret, typename... Args>
+struct handle_any_exception_handler
+{
+  void operator()( Args... args ) const
+  {
+    try
+    {
+      adaptee_func( std::forward<Args>( args )... );
+    }
+    catch ( ... )
+    {
+    }
+  }
+};
+
 }  // namespace
 
 TEST_CASE( "Check a non-throwing adapted non-void function", "non_throwing_adapter" )

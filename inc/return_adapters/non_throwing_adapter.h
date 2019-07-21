@@ -5,47 +5,56 @@
 
 namespace details
 {
-template <auto adaptee_func, typename FuncType>
-struct non_throwing_adapter;
-
-template <auto adaptee_func, typename... Args>
-struct non_throwing_adapter<adaptee_func, void ( * )( Args... )>
+template <auto* adaptee_func, typename Ret, typename... Args>
+struct default_exception_handler
 {
-  static bool non_throwing_func( Args... args )
+  std::optional<Ret> operator()( Args... args ) const
+  {
+    try
+    {
+      return adaptee_func( std::forward<Args>( args )... );
+    }
+    catch ( std::exception& )
+    {
+      return {};
+    }
+  }
+};
+
+template <auto* adaptee_func, typename... Args>
+struct default_exception_handler<adaptee_func, void, Args...>
+{
+  bool operator()( Args... args ) const
   {
     try
     {
       adaptee_func( std::forward<Args>( args )... );
       return true;
     }
-    catch ( ... )
+    catch ( std::exception& )
     {
       return false;
     }
   }
 };
 
-template <auto adaptee_func, typename Ret, typename... Args>
-struct non_throwing_adapter<adaptee_func, Ret ( * )( Args... )>
+template <auto* adaptee_func, typename FuncType, template <auto*, typename, typename...> class Handler>
+struct non_throwing_adapter;
+
+template <auto* adaptee_func, template <auto*, typename, typename...> class Handler, typename Ret, typename... Args>
+struct non_throwing_adapter<adaptee_func, Ret ( * )( Args... ), Handler>
 {
-  static std::optional<Ret> non_throwing_func( Args... args )
+  static auto non_throwing_func( Args... args )
   {
-    try
-    {
-      return adaptee_func( std::forward<Args>( args )... );
-    }
-    catch ( ... )
-    {
-      return {};
-    }
+    return Handler<adaptee_func, Ret, Args...>()( std::forward<Args>( args )... );
   }
 };
 }  // namespace details
 
 
 
-template <auto* func>
+template <auto* func, template <auto*, typename, typename...> class Handler = details::default_exception_handler>
 constexpr auto* adapt_to_non_throwing_func()
 {
-  return &details::non_throwing_adapter<func, decltype( func )>::non_throwing_func;
+  return &details::non_throwing_adapter<func, decltype( func ), Handler>::non_throwing_func;
 }
