@@ -18,9 +18,12 @@ option(RETURN_ADAPTERS_BUILD_TESTS "Build unit tests" ON)
 if(RETURN_ADAPTERS_BUILD_TESTS)
   enable_testing()
   add_subdirectory(tests)
+
+  if(MSVC)
+    set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT return_adapters_tests)
+  endif()
+
 endif()
-
-
 
 
 find_program(ClangFormat clang-format)
