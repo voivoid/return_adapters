@@ -25,7 +25,7 @@ namespace
   }
 }
 
-TEST_CASE("Check a non-void adapted function", "func_adaptor")
+TEST_CASE("Check a non-throwing adapted non-void function", "non_throwing_adapter")
 {
   constexpr auto* dec_if_less_than_11 = adapt_to_non_throwing_func<dec_or_throw_if_greater_than_10>();
   REQUIRE(dec_if_less_than_11);
@@ -44,7 +44,7 @@ TEST_CASE("Check a non-void adapted function", "func_adaptor")
   }
 }
 
-TEST_CASE("Check a void adapted function", "func_adaptor")
+TEST_CASE("Check a non-throwing adapted void function", "non_throwing_adapter")
 {
   constexpr auto* do_things_without_throwing = adapt_to_non_throwing_func<try_to_do_things>();
   REQUIRE(do_things_without_throwing);
