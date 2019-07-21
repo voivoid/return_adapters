@@ -5,47 +5,47 @@
 
 namespace details
 {
-  template <auto adaptee_func, typename FuncType>
-  struct non_throwing_adapter;
+template <auto adaptee_func, typename FuncType>
+struct non_throwing_adapter;
 
-  template <auto adaptee_func, typename... Args>
-  struct non_throwing_adapter<adaptee_func, void(*)(Args...)>
+template <auto adaptee_func, typename... Args>
+struct non_throwing_adapter<adaptee_func, void ( * )( Args... )>
+{
+  static bool non_throwing_func( Args... args )
   {
-    static bool non_throwing_func(Args... args)
+    try
     {
-      try
-      {
-        adaptee_func(std::forward<Args>(args)...);
-        return true;
-      }
-      catch (...)
-      {
-        return false;
-      }
+      adaptee_func( std::forward<Args>( args )... );
+      return true;
     }
-  };
+    catch ( ... )
+    {
+      return false;
+    }
+  }
+};
 
-  template <auto adaptee_func, typename Ret, typename... Args>
-  struct non_throwing_adapter<adaptee_func, Ret(*)(Args...)>
+template <auto adaptee_func, typename Ret, typename... Args>
+struct non_throwing_adapter<adaptee_func, Ret ( * )( Args... )>
+{
+  static std::optional<Ret> non_throwing_func( Args... args )
   {
-    static std::optional<Ret> non_throwing_func(Args... args)
+    try
     {
-      try
-      {
-        return adaptee_func(std::forward<Args>(args)...);
-      }
-      catch (...)
-      {
-        return {};
-      }
+      return adaptee_func( std::forward<Args>( args )... );
     }
-  };
-}
+    catch ( ... )
+    {
+      return {};
+    }
+  }
+};
+}  // namespace details
 
 
 
 template <auto* func>
 constexpr auto* adapt_to_non_throwing_func()
 {
-  return &details::non_throwing_adapter<func, decltype(func)>::non_throwing_func;
+  return &details::non_throwing_adapter<func, decltype( func )>::non_throwing_func;
 }
