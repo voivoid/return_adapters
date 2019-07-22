@@ -16,11 +16,26 @@ int dec_or_throw_if_greater_than_10( const int x )
   return x - 1;
 }
 
-void try_to_do_things( const bool should_throw )
+class non_std_exception
 {
-  if ( should_throw )
+};
+
+enum class throw_mode
+{
+  throw_std_exception,
+  throw_non_std_exception,
+  dont_throw_exception
+};
+
+void try_to_do_things( const throw_mode mode )
+{
+  if ( mode == throw_mode::throw_std_exception )
   {
     throw std::runtime_error( "test exception" );
+  }
+  else if ( mode == throw_mode::throw_non_std_exception )
+  {
+    throw non_std_exception();
   }
 }
 
@@ -41,39 +56,54 @@ struct handle_any_exception_handler
 
 }  // namespace
 
-TEST_CASE( "Check a non-throwing adapted non-void function", "non_throwing_adapter" )
+TEST_CASE( "Calling non-throwing adapted non-void functions", "non_throwing_adapter" )
 {
   constexpr auto* dec_if_less_than_11 = adapt_to_non_throwing_func<dec_or_throw_if_greater_than_10>();
   REQUIRE( dec_if_less_than_11 );
 
-  SECTION( "checking a case with no exception" )
+  SECTION( "The adaptee function throws no exception" )
   {
     auto result = dec_if_less_than_11( 10 );
     REQUIRE( result );
-    REQUIRE( *result == 9 );
+    CHECK( *result == 9 );
   }
 
-  SECTION( "checking a case with an exception" )
+  SECTION( "the adaptee function throws a std exception" )
   {
     auto result = dec_if_less_than_11( 11 );
-    REQUIRE( !result );
+    CHECK( !result );
   }
 }
 
-TEST_CASE( "Check a non-throwing adapted void function", "non_throwing_adapter" )
+TEST_CASE( "Calling a non-throwing adapted void functions", "non_throwing_adapter" )
 {
   constexpr auto* do_things_without_throwing = adapt_to_non_throwing_func<try_to_do_things>();
   REQUIRE( do_things_without_throwing );
 
-  SECTION( "checking a case with no exception" )
+  SECTION( "The adaptee function throws no exception" )
   {
-    auto result = do_things_without_throwing( false );
-    REQUIRE( result );
+    auto result = do_things_without_throwing( throw_mode::dont_throw_exception );
+    CHECK( result );
   }
 
-  SECTION( "checking a case with an exception" )
+  SECTION( "The adaptee function throws a std exception" )
   {
-    auto result = do_things_without_throwing( true );
-    REQUIRE( !result );
+    auto result = do_things_without_throwing( throw_mode::throw_std_exception );
+    CHECK( !result );
   }
+
+  SECTION( "The adaptee function throws a non-std exception" )
+  {
+    CHECK_THROWS_AS( do_things_without_throwing( throw_mode::throw_non_std_exception ), non_std_exception );
+  }
+}
+
+TEST_CASE( "Calling a non-throwing adapted functions with custom handler", "non_throwing_adapter" )
+{
+  constexpr auto* do_things_without_throwing = adapt_to_non_throwing_func<try_to_do_things, handle_any_exception_handler>();
+  REQUIRE( do_things_without_throwing );
+
+  CHECK_NOTHROW( do_things_without_throwing( throw_mode::throw_std_exception ) );
+  CHECK_NOTHROW( do_things_without_throwing( throw_mode::throw_non_std_exception ) );
+  CHECK_NOTHROW( do_things_without_throwing( throw_mode::dont_throw_exception ) );
 }
