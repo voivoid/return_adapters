@@ -6,7 +6,11 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+include(cmake/thirdparties/catch2.cmake)
+include(cmake/thirdparties/typestring.cmake)
+
 add_library(return_adapters INTERFACE)
+target_link_libraries(return_adapters INTERFACE TypeString::TypeString)
 
 set(headers_dir ${CMAKE_CURRENT_SOURCE_DIR}/inc/return_adapters)
 target_sources(return_adapters INTERFACE ${headers_dir}/non_throwing_adapter.h
@@ -19,8 +23,10 @@ endif()
 
 target_include_directories(return_adapters INTERFACE inc)
 
-option(RETURN_ADAPTERS_BUILD_TESTS "Build unit tests" ON)
 
+
+
+option(RETURN_ADAPTERS_BUILD_TESTS "Build unit tests" ON)
 if(RETURN_ADAPTERS_BUILD_TESTS)
   enable_testing()
   add_subdirectory(tests)
@@ -30,6 +36,8 @@ if(RETURN_ADAPTERS_BUILD_TESTS)
   endif()
 
 endif()
+
+
 
 
 find_program(ClangFormat clang-format)

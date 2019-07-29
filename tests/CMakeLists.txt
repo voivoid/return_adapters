@@ -1,5 +1,3 @@
-include(catch2.cmake)
-
 set(tests_dir ${CMAKE_CURRENT_SOURCE_DIR})
 add_executable(return_adapters_tests ${tests_dir}/main.cpp
                                      ${tests_dir}/non_throwing_adapter.cpp
