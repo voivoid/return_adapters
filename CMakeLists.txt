@@ -8,9 +8,13 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 include(cmake/thirdparties/catch2.cmake)
 include(cmake/thirdparties/typestring.cmake)
+include(cmake/thirdparties/fmt.cmake)
+
+
+# return_adapters
 
 add_library(return_adapters INTERFACE)
-target_link_libraries(return_adapters INTERFACE TypeString::TypeString)
+target_link_libraries(return_adapters INTERFACE TypeString::TypeString Fmt::Fmt)
 
 set(headers_dir ${CMAKE_CURRENT_SOURCE_DIR}/inc/return_adapters)
 target_sources(return_adapters INTERFACE ${headers_dir}/non_throwing_adapter.h
@@ -24,7 +28,7 @@ endif()
 target_include_directories(return_adapters INTERFACE inc)
 
 
-
+# tests
 
 option(RETURN_ADAPTERS_BUILD_TESTS "Build unit tests" ON)
 if(RETURN_ADAPTERS_BUILD_TESTS)
@@ -34,11 +38,10 @@ if(RETURN_ADAPTERS_BUILD_TESTS)
   if(MSVC)
     set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT return_adapters_tests)
   endif()
-
 endif()
 
 
-
+# clang-format
 
 find_program(ClangFormat clang-format)
 if(ClangFormat)

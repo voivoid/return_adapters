@@ -1,7 +1,12 @@
 #pragma once
 
 #include "typestring.hh"
+
+#include "fmt/format.h"
+
 #include <utility>
+
+#include <cstring>
 
 namespace return_adapters
 {
@@ -58,7 +63,7 @@ struct errno_exception_formatter
   template <typename Result>
   std::string operator()( const char* const adaptee_func_name, const Result ) const
   {
-    retrun std::string( adaptee_func_name ) + " failed; errno was: " + std::to_string( errno );
+    return std::string( adaptee_func_name ) + " failed; errno was: " + std::to_string( errno );
   }
 };
 
@@ -67,7 +72,7 @@ struct errno_str_exception_formatter
   template <typename Result>
   std::string operator()( const char* const adaptee_func_name, const Result ) const
   {
-    retrun std::string( adaptee_func_name ) + " failed; errno was: " + std::to_string( strerror( errno ) );
+    return std::string( adaptee_func_name ) + " failed; errno was: " + std::string( strerror( errno ) );
   }
 };
 
