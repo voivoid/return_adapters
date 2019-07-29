@@ -14,29 +14,26 @@ enum class result
   failure
 };
 
-int open_file( const result expected_result )
+int open_file_returning_int( const result expected_result )
 {
   return expected_result == result::success ? 0 : -1;
 }
 
-struct throw_if_nonzero_result
+struct FILE;
+FILE* open_file_returning_ptr( const result expected_result )
 {
-    void operator()( const int result ) const
-    {
-        if( result != 0 )
-        {
-            throw std::runtime_error( "operation failed" );
-        }
-    }
-};
+  return expected_result == result::success ? reinterpret_cast<FILE*>( 1 ) : nullptr;
+}
 
 }  // namespace
 
-TEST_CASE( "Check a throwing adapted function", "throwing_adapter" )
+TEST_CASE( "Check throw_if_nonzero_result handler", "throwing_adapter" )
 {
-    constexpr auto* throwing_func = adapt_to_throwing_func<&open_file, throw_if_nonzero_result>();
-    REQUIRE( throwing_func );
+  constexpr auto* throwing_func =
+      RETURN_ADAPTERS_ADAPT_TO_THROWING( open_file_returning_int, generic_throwing_adapter_handler<check_ret_val_is_not_zero> );
+  REQUIRE( throwing_func );
 
-    CHECK_NOTHROW( throwing_func( result::success ));
-    CHECK_THROWS_AS( throwing_func( result::failure ), std::runtime_error );
+  CHECK_NOTHROW( throwing_func( result::success ) );
+  CHECK_THROWS_AS( throwing_func( result::failure ), std::runtime_error );
+  CHECK_THROWS_WITH( throwing_func( result::failure ), "open_file_returning_int failed; returned value was: -1" );
 }
