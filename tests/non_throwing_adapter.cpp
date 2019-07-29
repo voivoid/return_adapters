@@ -4,6 +4,8 @@
 
 #include <stdexcept>
 
+using namespace return_adapters;
+
 namespace
 {
 int dec_or_throw_if_greater_than_10( const int x )

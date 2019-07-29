@@ -4,6 +4,9 @@
 #include <stdexcept>
 #include <utility>
 
+namespace return_adapters
+{
+
 namespace details
 {
 template <auto* adaptee_func, typename Ret, typename... Args>
@@ -58,4 +61,6 @@ template <auto* func, template <auto*, typename, typename...> class Handler = de
 constexpr auto* adapt_to_non_throwing_func()
 {
   return &details::non_throwing_adapter<func, decltype( func ), Handler>::non_throwing_func;
+}
+
 }

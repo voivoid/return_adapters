@@ -2,6 +2,8 @@
 
 #include "return_adapters/retval_adapter.h"
 
+using namespace return_adapters;
+
 namespace
 {
 enum class result

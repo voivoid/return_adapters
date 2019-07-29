@@ -4,6 +4,8 @@
 
 #include <stdexcept>
 
+using namespace return_adapters;
+
 namespace
 {
 enum class result

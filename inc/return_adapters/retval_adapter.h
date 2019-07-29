@@ -2,6 +2,9 @@
 
 #include <utility>
 
+namespace return_adapters
+{
+
 namespace details
 {
 
@@ -23,4 +26,6 @@ template <auto* func, typename RetValAdapter>
 constexpr auto* adapt_func_retval()
 {
   return &details::retval_adapter<func, decltype( func ), RetValAdapter>::retval_adapted_func;
+}
+
 }

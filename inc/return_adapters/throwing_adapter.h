@@ -2,6 +2,9 @@
 
 #include <utility>
 
+namespace return_adapters
+{
+
 namespace details
 {
 template <auto* adaptee_func, typename FuncType, typename RetValHandler>
@@ -22,4 +25,6 @@ template <auto* func, typename RetValHandler>
 constexpr auto* adapt_to_throwing_func()
 {
     return &details::throwing_adapter<func, decltype( func ), RetValHandler>::throwing_func;
+}
+
 }
