@@ -4,7 +4,7 @@
 
 #include <stdexcept>
 
-using namespace return_adapters;
+using namespace return_adapters::throwing;
 
 namespace
 {
@@ -30,7 +30,7 @@ FILE* open_file_returning_ptr( const result expected_result )
 TEST_CASE( "Check throw_if_nonzero_result handler", "throwing_adapter" )
 {
   constexpr auto* throwing_func =
-      RETURN_ADAPTERS_ADAPT_TO_THROWING( open_file_returning_int, generic_throwing_adapter_handler<check_ret_val_is_not_zero> );
+      RETURN_ADAPTERS_ADAPT_TO_THROWING( open_file_returning_int, generic_adapter_handler<check_ret_val_is_not_zero> );
   REQUIRE( throwing_func );
 
   CHECK_NOTHROW( throwing_func( result::success ) );
