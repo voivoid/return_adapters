@@ -22,8 +22,19 @@ set_target_properties(Fmt::Fmt PROPERTIES INTERFACE_SYSTEM_INCLUDE_DIRECTORIES $
 
 ExternalProject_Get_Property(get_fmt BINARY_DIR)
 
-set_target_properties(Fmt::Fmt PROPERTIES
-    IMPORTED_LINK_INTERFACE_LANGUAGES "CXX"
-    IMPORTED_LOCATION "${BINARY_DIR}/libfmt.a")
+if(MSVC)
+  set_property(TARGET Fmt::Fmt APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
+  set_property(TARGET Fmt::Fmt APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
+
+  set_target_properties(Fmt::Fmt PROPERTIES
+    IMPORTED_LINK_INTERFACE_LANGUAGES_RELEASE "CXX"
+    IMPORTED_LOCATION_RELEASE "${BINARY_DIR}/release/fmt.lib"
+    IMPORTED_LINK_INTERFACE_LANGUAGES_DEBUG "CXX"
+    IMPORTED_LOCATION_DEBUG "${BINARY_DIR}/debug/fmtd.lib")
+else()
+  set_target_properties(Fmt::Fmt PROPERTIES
+      IMPORTED_LINK_INTERFACE_LANGUAGES "CXX"
+      IMPORTED_LOCATION "${BINARY_DIR}/libfmt.a")
+endif()
 
 add_dependencies(Fmt::Fmt get_fmt)
