@@ -31,13 +31,13 @@ struct adapter<adaptee_func, Ret ( * )( Args... ), TypeStr, RetValHandler>
 
 inline std::string get_errno_string()
 {
-  #ifdef _MSC_VER 
-    char buff[ 256 ];
-    strerror_s( buff, errno );
-    return buff;
-  #else
-    return strerror( errno );
-  #endif
+#ifdef _MSC_VER
+  char buff[ 256 ];
+  strerror_s( buff, errno );
+  return buff;
+#else
+  return strerror( errno );
+#endif
 }
 
 }  // namespace details

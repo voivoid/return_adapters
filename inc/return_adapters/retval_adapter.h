@@ -28,4 +28,4 @@ constexpr auto* adapt_func_retval()
   return &details::retval_adapter<func, decltype( func ), RetValAdapter>::retval_adapted_func;
 }
 
-}
+}  // namespace return_adapters
