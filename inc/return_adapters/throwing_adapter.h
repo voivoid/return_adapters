@@ -60,7 +60,7 @@ struct check_ret_val_is_not_zero
   }
 };
 
-struct check_ptr_is_not_null
+struct check_ret_ptr_is_not_null
 {
   template <typename T>
   bool operator()( const T* ptr ) const
