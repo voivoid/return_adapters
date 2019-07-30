@@ -4,7 +4,7 @@
 
 #include "return_adapters/retval_adapter.h"
 
-namespace return_adapters
+namespace safe_com
 {
 
 }

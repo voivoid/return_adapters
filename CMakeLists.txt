@@ -19,10 +19,11 @@ target_link_libraries(return_adapters INTERFACE TypeString::TypeString Fmt::Fmt)
 set(headers_dir ${CMAKE_CURRENT_SOURCE_DIR}/inc/return_adapters)
 target_sources(return_adapters INTERFACE ${headers_dir}/non_throwing_adapter.h
                                          ${headers_dir}/throwing_adapter.h
-                                         ${headers_dir}/retval_adapter.h)
+                                         ${headers_dir}/retval_adapter.h
+                                         ${headers_dir}/impl/safe_crt.h)
 
 if(WIN32)
-  target_sources(return_adapters INTERFACE ${headers_dir}/impl/com_adapters.h)
+  target_sources(return_adapters INTERFACE ${headers_dir}/impl/safe_com.h)
 endif()
 
 target_include_directories(return_adapters INTERFACE inc)

@@ -29,7 +29,27 @@ struct adapter<adaptee_func, Ret ( * )( Args... ), TypeStr, RetValHandler>
   }
 };
 
+inline std::string get_errno_string()
+{
+  #ifdef _MSC_VER 
+    char buff[ 256 ];
+    strerror_s( buff, errno );
+    return buff;
+  #else
+    return strerror( errno );
+  #endif
+}
+
 }  // namespace details
+
+struct check_ret_val_is_zero
+{
+  template <typename RetVal>
+  bool operator()( const RetVal ret_val ) const
+  {
+    return ret_val == 0;
+  }
+};
 
 struct check_ret_val_is_not_zero
 {
@@ -72,7 +92,7 @@ struct errno_str_exception_formatter
   template <typename Result>
   std::string operator()( const char* const adaptee_func_name, const Result ) const
   {
-    return fmt::format( "{} failed; returned value was: {}", adaptee_func_name, strerror( errno ) );
+    return fmt::format( "{} failed; returned value was: {}", adaptee_func_name, details::get_errno_string() );
   }
 };
 
