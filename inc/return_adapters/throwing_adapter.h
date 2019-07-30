@@ -54,7 +54,7 @@ struct generic_exception_formatter
   template <typename Result>
   std::string operator()( const char* const adaptee_func_name, const Result result ) const
   {
-    return std::string( adaptee_func_name ) + " failed; returned value was: " + std::to_string( result );
+    return fmt::format( "{} failed; returned value was: {}", adaptee_func_name, result );
   }
 };
 
@@ -63,7 +63,7 @@ struct errno_exception_formatter
   template <typename Result>
   std::string operator()( const char* const adaptee_func_name, const Result ) const
   {
-    return std::string( adaptee_func_name ) + " failed; errno was: " + std::to_string( errno );
+    return fmt::format( "{} failed; returned value was: {}", adaptee_func_name, errno );
   }
 };
 
@@ -72,7 +72,7 @@ struct errno_str_exception_formatter
   template <typename Result>
   std::string operator()( const char* const adaptee_func_name, const Result ) const
   {
-    return std::string( adaptee_func_name ) + " failed; errno was: " + std::string( strerror( errno ) );
+    return fmt::format( "{} failed; returned value was: {}", adaptee_func_name, strerror( errno ) );
   }
 };
 
