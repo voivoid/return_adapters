@@ -35,5 +35,5 @@ TEST_CASE( "Check throw_if_nonzero_result handler", "throwing_adapter" )
 
   CHECK_NOTHROW( throwing_func( result::success ) );
   CHECK_THROWS_AS( throwing_func( result::failure ), std::runtime_error );
-  CHECK_THROWS_WITH( throwing_func( result::failure ), "open_file_returning_int failed; returned value was: -1" );
+  CHECK_THROWS_WITH( throwing_func( result::failure ), "open_file_returning_int failed; returned value: -1" );
 }

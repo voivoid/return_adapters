@@ -2,11 +2,9 @@
 
 #include "typestring.hh"
 
-#include "fmt/format.h"
-
-#include <utility>
-
 #include <cstring>
+#include <sstream>
+#include <utility>
 
 namespace return_adapters
 {
@@ -38,6 +36,14 @@ inline std::string get_errno_string()
 #else
   return strerror( errno );
 #endif
+}
+
+template <typename T>
+std::string format_error_message( const char* const adaptee_func_name, const char* const value_description, const T& value )
+{
+  std::ostringstream s;
+  s << adaptee_func_name << " failed; " << value_description << ": " << value;
+  return s.str();
 }
 
 }  // namespace details
@@ -74,7 +80,7 @@ struct generic_exception_formatter
   template <typename Result>
   std::string operator()( const char* const adaptee_func_name, const Result result ) const
   {
-    return fmt::format( "{} failed; returned value was: {}", adaptee_func_name, result );
+    return details::format_error_message( adaptee_func_name, "returned value", result );
   }
 };
 
@@ -83,7 +89,7 @@ struct errno_exception_formatter
   template <typename Result>
   std::string operator()( const char* const adaptee_func_name, const Result ) const
   {
-    return fmt::format( "{} failed; returned value was: {}", adaptee_func_name, errno );
+    return details::format_error_message( adaptee_func_name, "errno", errno );
   }
 };
 
@@ -92,7 +98,7 @@ struct errno_str_exception_formatter
   template <typename Result>
   std::string operator()( const char* const adaptee_func_name, const Result ) const
   {
-    return fmt::format( "{} failed; returned value was: {}", adaptee_func_name, details::get_errno_string() );
+    return details::format_error_message( adaptee_func_name, "errno message", details::get_errno_string() );
   }
 };
 
