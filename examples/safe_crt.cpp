@@ -1,5 +1,3 @@
-#pragma once
-
 #include "return_adapters/throwing_adapter.h"
 
 #include <cstdio>
@@ -17,4 +15,4 @@ constexpr auto* fopen  = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fopen, safe_crt_th
 constexpr auto* fclose = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fclose, safe_crt_throwing_handler<check_ret_val_is_zero> );
 constexpr auto* fseek  = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fseek, safe_crt_throwing_handler<check_ret_val_is_zero> );
 
-}
+}  // namespace safe_crt
