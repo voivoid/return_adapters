@@ -48,32 +48,29 @@ std::string format_error_message( const char* const adaptee_func_name, const cha
 
 }  // namespace details
 
-struct check_retval_is_zero
+template <auto expected>
+struct check_retval_is_
 {
-  template <typename RetVal>
-  bool operator()( const RetVal retval ) const
-  {
-    return retval == 0;
-  }
+    template <typename RetVal>
+    bool operator()( const RetVal retval ) const
+    {
+      return retval == expected;
+    }
 };
 
-struct check_retval_is_not_zero
+template <auto expected>
+struct check_retval_is_not_
 {
-  template <typename RetVal>
-  bool operator()( const RetVal retval ) const
-  {
-    return retval != 0;
-  }
+    template <typename RetVal>
+    bool operator()( const RetVal retval ) const
+    {
+        return !check_retval_is_<expected>{}( retval );
+    }
 };
 
-struct check_ret_ptr_is_not_null
-{
-  template <typename T>
-  bool operator()( const T* ptr ) const
-  {
-    return ptr != nullptr;
-  }
-};
+using check_retval_is_zero = check_retval_is_<0>;
+using check_retval_is_not_zero = check_retval_is_not_<0>;
+using check_ret_ptr_is_not_null = check_retval_is_not_<nullptr>;
 
 struct generic_exception_formatter
 {
