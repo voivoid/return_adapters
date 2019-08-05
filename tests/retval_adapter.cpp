@@ -2,30 +2,16 @@
 
 #include "return_adapters/predicates.h"
 #include "return_adapters/retval_adapter.h"
+#include "test_utils.h"
 
 using namespace return_adapters;
 using namespace return_adapters::retval;
 
-namespace
+TEST_CASE( "Check retval adapter with check_retval_is_zero predicate", "retval_adapter" )
 {
-enum class result
-{
-  success,
-  failure
-};
+  constexpr auto* return_int_adapted = adapt<&ra_tests::return_int, check_retval_is_zero>();
+  REQUIRE( return_int_adapted );
 
-int open_file( const result expected_result )
-{
-  return expected_result == result::success ? 0 : -1;
-}
-
-}  // namespace
-
-TEST_CASE( "The adaptee function should return bool as result", "retval_adapter" )
-{
-  constexpr auto* open_file_adaptee = adapt<&open_file, check_retval_is_zero>();
-  REQUIRE( open_file_adaptee );
-
-  CHECK( open_file_adaptee( result::success ) );
-  CHECK( !open_file_adaptee( result::failure ) );
+  CHECK( return_int_adapted( ra_tests::int_value::zero ) );
+  CHECK( !return_int_adapted( ra_tests::int_value::non_zero ) );
 }

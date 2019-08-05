@@ -90,7 +90,7 @@ struct generic_adapter_handler
   template <typename Result>
   void operator()( const char* const func_name, const Result result ) const
   {
-    if ( RetValuePredicate{}( result ) )
+    if ( !RetValuePredicate{}( result ) )
     {
       throw Exception( ExceptionMsgFormatter{}( func_name, result ) );
     }
