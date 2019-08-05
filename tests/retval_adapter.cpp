@@ -3,6 +3,7 @@
 #include "return_adapters/retval_adapter.h"
 #include "return_adapters/predicates.h"
 
+using namespace return_adapters;
 using namespace return_adapters::retval;
 
 namespace

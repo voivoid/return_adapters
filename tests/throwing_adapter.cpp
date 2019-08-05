@@ -5,6 +5,7 @@
 
 #include <stdexcept>
 
+using namespace return_adapters;
 using namespace return_adapters::throwing;
 
 namespace
