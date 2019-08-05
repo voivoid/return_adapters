@@ -27,6 +27,15 @@ struct adapter<adaptee_func, Ret ( * )( Args... ), AdapteeFuncName, RetValHandle
   }
 };
 
+template <auto* adaptee_func, typename AdapteeFuncName, typename Ret, typename... Args, typename RetValHandler>
+struct adapter<adaptee_func, Ret ( * )( Args... ) throw (), AdapteeFuncName, RetValHandler>
+{
+  static auto throwing_func( Args... args )
+  {
+    return RetValHandler()( AdapteeFuncName::data(), adaptee_func( std::forward<Args>( args )... ) );
+  }
+};
+
 inline std::string get_errno_string()
 {
 #ifdef _MSC_VER
@@ -75,13 +84,13 @@ struct errno_str_exception_formatter
   }
 };
 
-template <typename RetValueChecker, typename ExceptionMsgFormatter = generic_exception_formatter, typename Exception = std::runtime_error>
+template <typename RetValuePredicate, typename ExceptionMsgFormatter = generic_exception_formatter, typename Exception = std::runtime_error>
 struct generic_adapter_handler
 {
   template <typename Result>
   void operator()( const char* const func_name, const Result result ) const
   {
-    if ( RetValueChecker{}( result ) )
+    if ( RetValuePredicate{}( result ) )
     {
       throw Exception( ExceptionMsgFormatter{}( func_name, result ) );
     }
@@ -100,5 +109,5 @@ constexpr auto* adapt()
 
 
 #define RETURN_ADAPTERS_ADAPT_TO_THROWING( func, handler ) return_adapters::throwing::adapt<&func, typestring_is( #func ), handler>()
-#define RETURN_ADAPTERS_ADAPT_TO_THROWING_GENERIC( func, retval_checker )                                                                  \
-  return_adapters::throwing::adapt<&func, typestring_is( #func ), generic_adapter_handler<retval_checker>>()
+#define RETURN_ADAPTERS_ADAPT_TO_THROWING_GENERIC( func, retval_predicate )                                                           \
+  return_adapters::throwing::adapt<&func, typestring_is( #func ), generic_adapter_handler<retval_predicate>>()
