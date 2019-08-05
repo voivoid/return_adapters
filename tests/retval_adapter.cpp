@@ -1,7 +1,7 @@
 #include "catch2/catch.hpp"
 
-#include "return_adapters/retval_adapter.h"
 #include "return_adapters/predicates.h"
+#include "return_adapters/retval_adapter.h"
 
 using namespace return_adapters;
 using namespace return_adapters::retval;

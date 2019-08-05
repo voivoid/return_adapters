@@ -28,7 +28,7 @@ struct adapter<adaptee_func, Ret ( * )( Args... ), AdapteeFuncName, RetValHandle
 };
 
 template <auto* adaptee_func, typename AdapteeFuncName, typename Ret, typename... Args, typename RetValHandler>
-struct adapter<adaptee_func, Ret ( * )( Args... ) throw (), AdapteeFuncName, RetValHandler>
+struct adapter<adaptee_func, Ret ( * )( Args... ) throw(), AdapteeFuncName, RetValHandler>
 {
   static auto throwing_func( Args... args )
   {
@@ -109,5 +109,5 @@ constexpr auto* adapt()
 
 
 #define RETURN_ADAPTERS_ADAPT_TO_THROWING( func, handler ) return_adapters::throwing::adapt<&func, typestring_is( #func ), handler>()
-#define RETURN_ADAPTERS_ADAPT_TO_THROWING_GENERIC( func, retval_predicate )                                                           \
+#define RETURN_ADAPTERS_ADAPT_TO_THROWING_GENERIC( func, retval_predicate )                                                                \
   return_adapters::throwing::adapt<&func, typestring_is( #func ), generic_adapter_handler<retval_predicate>>()

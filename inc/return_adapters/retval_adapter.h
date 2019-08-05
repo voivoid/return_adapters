@@ -1,8 +1,8 @@
 #pragma once
 
-#include <utility>
 #include <optional>
 #include <type_traits>
+#include <utility>
 
 namespace return_adapters
 {
@@ -24,7 +24,7 @@ struct retval_adapter<adaptee_func, Ret ( * )( Args... ), RetValAdapter>
 };
 
 template <auto* adaptee_func, typename Ret, typename... Args, typename RetValAdapter>
-struct retval_adapter<adaptee_func, Ret ( * )( Args... ) throw (), RetValAdapter>
+struct retval_adapter<adaptee_func, Ret ( * )( Args... ) throw(), RetValAdapter>
 {
   static auto retval_adapted_func( Args... args )
   {
@@ -36,28 +36,28 @@ struct retval_adapter<adaptee_func, Ret ( * )( Args... ) throw (), RetValAdapter
 
 struct adapter_id
 {
-    template <typename T>
-    const T& operator()( const T& t ) const
-    {
-        return t;
-    }
+  template <typename T>
+  auto&& operator()( T&& t ) const
+  {
+    return std::forward<T>( t );
+  }
 };
 
-template <typename Predicate, typename Adapter>
+template <typename Predicate, typename Adapter = adapter_id>
 struct to_optional
 {
-    template<typename T>
-    auto operator()( const T& retval ) const
+  template <typename T>
+  auto operator()( T&& retval ) const
+  {
+    using AdaptedType = std::decay_t<decltype( Adapter{}( std::forward<T>( retval ) ) )>;
+    using Optional    = std::optional<AdaptedType>;
+    if ( Predicate{}( retval ) )
     {
-        using AdaptedType = std::decay_t<decltype(Adapter{}( retval ))>;
-        using OPT = std::optional<AdaptedType>;
-        if( Predicate{}( retval ) )
-        {
-            return OPT{ Adapter{}( retval ) };
-        }
-
-        return OPT{};
+      return Optional{ Adapter{}( std::forward<T>( retval ) ) };
     }
+
+    return Optional{};
+  }
 };
 
 template <auto* func, typename RetValAdapter>

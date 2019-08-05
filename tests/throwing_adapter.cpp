@@ -1,7 +1,7 @@
 #include "catch2/catch.hpp"
 
-#include "return_adapters/throwing_adapter.h"
 #include "return_adapters/predicates.h"
+#include "return_adapters/throwing_adapter.h"
 
 #include <stdexcept>
 
