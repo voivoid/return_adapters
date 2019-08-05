@@ -15,15 +15,15 @@ namespace throwing
 
 namespace details
 {
-template <auto* adaptee_func, typename TypeStr, typename FuncType, typename RetValHandler>
+template <auto* adaptee_func, typename AdapteeFuncName, typename AdapteeFuncType, typename RetValHandler>
 struct adapter;
 
-template <auto* adaptee_func, typename TypeStr, typename Ret, typename... Args, typename RetValHandler>
-struct adapter<adaptee_func, Ret ( * )( Args... ), TypeStr, RetValHandler>
+template <auto* adaptee_func, typename AdapteeFuncName, typename Ret, typename... Args, typename RetValHandler>
+struct adapter<adaptee_func, Ret ( * )( Args... ), AdapteeFuncName, RetValHandler>
 {
   static auto throwing_func( Args... args )
   {
-    return RetValHandler()( TypeStr::data(), adaptee_func( std::forward<Args>( args )... ) );
+    return RetValHandler()( AdapteeFuncName::data(), adaptee_func( std::forward<Args>( args )... ) );
   }
 };
 
@@ -48,21 +48,21 @@ std::string format_error_message( const char* const adaptee_func_name, const cha
 
 }  // namespace details
 
-struct check_ret_val_is_zero
+struct check_retval_is_zero
 {
   template <typename RetVal>
-  bool operator()( const RetVal ret_val ) const
+  bool operator()( const RetVal retval ) const
   {
-    return ret_val == 0;
+    return retval == 0;
   }
 };
 
-struct check_ret_val_is_not_zero
+struct check_retval_is_not_zero
 {
   template <typename RetVal>
-  bool operator()( const RetVal ret_val ) const
+  bool operator()( const RetVal retval ) const
   {
-    return ret_val != 0;
+    return retval != 0;
   }
 };
 
@@ -115,10 +115,10 @@ struct generic_adapter_handler
   }
 };
 
-template <auto* func, typename TypeStr, typename RetValHandler>
+template <auto* adaptee_func, typename AdapteeFuncName, typename RetValHandler>
 constexpr auto* adapt()
 {
-  return &details::adapter<func, decltype( func ), TypeStr, RetValHandler>::throwing_func;
+  return &details::adapter<adaptee_func, decltype( adaptee_func ), AdapteeFuncName, RetValHandler>::throwing_func;
 }
 
 }  // namespace throwing
