@@ -1,7 +1,6 @@
 #pragma once
 
 #include "typestring.hh"
-#include "return_adapters/predicates.h"
 
 #include <cstring>
 #include <sstream>
