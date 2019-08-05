@@ -18,7 +18,8 @@ target_link_libraries(return_adapters INTERFACE TypeString::TypeString)
 set(headers_dir ${CMAKE_CURRENT_SOURCE_DIR}/inc/return_adapters)
 target_sources(return_adapters INTERFACE ${headers_dir}/non_throwing_adapter.h
                                          ${headers_dir}/throwing_adapter.h
-                                         ${headers_dir}/retval_adapter.h)
+                                         ${headers_dir}/retval_adapter.h
+                                         ${headers_dir}/predicates.h)
 
 target_include_directories(return_adapters INTERFACE inc)
 
