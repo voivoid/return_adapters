@@ -4,6 +4,8 @@
 
 namespace return_adapters
 {
+namespace retval
+{
 
 namespace details
 {
@@ -23,9 +25,10 @@ struct retval_adapter<adaptee_func, Ret ( * )( Args... ), RetValAdapter>
 }  // namespace details
 
 template <auto* func, typename RetValAdapter>
-constexpr auto* adapt_func_retval()
+constexpr auto* adapt()
 {
   return &details::retval_adapter<func, decltype( func ), RetValAdapter>::retval_adapted_func;
 }
 
+}  // namespace retval
 }  // namespace return_adapters

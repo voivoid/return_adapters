@@ -2,7 +2,7 @@
 
 #include "return_adapters/retval_adapter.h"
 
-using namespace return_adapters;
+using namespace return_adapters::retval;
 
 namespace
 {
@@ -28,7 +28,7 @@ struct int_result_adapter
 
 TEST_CASE( "The adaptee function should return bool as result", "retval_adapter" )
 {
-  constexpr auto* open_file_adaptee = adapt_func_retval<&open_file, int_result_adapter>();
+  constexpr auto* open_file_adaptee = adapt<&open_file, int_result_adapter>();
   REQUIRE( open_file_adaptee );
 
   CHECK( open_file_adaptee( result::success ) );
