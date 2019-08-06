@@ -12,6 +12,6 @@ TEST_CASE( "Check retval adapter with check_retval_is_zero predicate", "retval_a
   constexpr auto* return_int_adapted = adapt<&ra_tests::return_int, check_retval_is_zero>();
   REQUIRE( return_int_adapted );
 
-  CHECK( return_int_adapted( ra_tests::int_value::zero ) );
-  CHECK( !return_int_adapted( ra_tests::int_value::non_zero ) );
+  CHECK( return_int_adapted( 0 ) );
+  CHECK( !return_int_adapted( -1 ) );
 }

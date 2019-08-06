@@ -9,13 +9,13 @@
 using namespace return_adapters;
 using namespace return_adapters::throwing;
 
-TEST_CASE( "Check throw_if_nonzero_result handler", "throwing_adapter" )
+TEST_CASE( "Check generic_adapter_handler with check_retval_is_not_zero predicate", "throwing_adapter" )
 {
-  constexpr auto* throwing_func =
+  constexpr auto* return_int_throwing =
       RETURN_ADAPTERS_ADAPT_TO_THROWING( ra_tests::return_int, generic_adapter_handler<check_retval_is_not_zero> );
-  REQUIRE( throwing_func );
+  REQUIRE( return_int_throwing );
 
-  CHECK_NOTHROW( throwing_func( ra_tests::int_value::non_zero) );
-  CHECK_THROWS_AS( throwing_func( ra_tests::int_value::zero ), std::runtime_error );
-  CHECK_THROWS_WITH( throwing_func( ra_tests::int_value::zero ), "ra_tests::return_int failed; returned value: 0" );
+  CHECK_NOTHROW( return_int_throwing( -1 ) );
+  CHECK_THROWS_AS( return_int_throwing( 0 ), std::runtime_error );
+  CHECK_THROWS_WITH( return_int_throwing( 0 ), "ra_tests::return_int failed; returned value: 0" );
 }

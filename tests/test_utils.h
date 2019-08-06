@@ -1,30 +1,61 @@
 #pragma once
 
+#include <stdexcept>
+
 namespace ra_tests
 {
 
-enum class int_value
+inline int return_int( const int val_to_return )
 {
-  zero,
-  non_zero
+  return val_to_return;
+}
+
+inline int dec_if_positive( const int val )
+{
+  if ( val > 0 )
+  {
+    return val - 1;
+  }
+
+  throw std::runtime_error( "negative value" );
+}
+
+
+enum class ptr_value_to_return
+{
+  null_ptr,
+  non_null_ptr
 };
 
-enum class ptr_value
+struct Obj
 {
-    null_ptr,
-    non_null_ptr
+};
+inline Obj* return_ptr( ptr_value_to_return ptr_to_return )
+{
+  return ptr_to_return == ptr_value_to_return::null_ptr ? nullptr : reinterpret_cast<Obj*>( 1 );
+}
+
+class non_std_exception
+{
 };
 
-inline int return_int( const int_value val_to_return )
+enum class throw_mode
 {
-  return val_to_return == int_value::zero ? 0 : -1;
-}
+  throw_std_exception,
+  throw_non_std_exception,
+  dont_throw_exception
+};
 
-struct Obj {};
-
-inline Obj* return_ptr( ptr_value val_to_return )
+inline void throwing_function( const throw_mode mode )
 {
-  return val_to_return == ptr_value::null_ptr ? nullptr : reinterpret_cast<Obj*>(1);
+  if ( mode == throw_mode::throw_std_exception )
+  {
+    throw std::runtime_error( "test exception" );
+  }
+  else if ( mode == throw_mode::throw_non_std_exception )
+  {
+    throw non_std_exception();
+  }
 }
 
-}
+}  // namespace ra_tests
