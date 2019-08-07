@@ -1,7 +1,7 @@
 #pragma once
 
-#include <stdexcept>
 #include <cassert>
+#include <stdexcept>
 
 namespace ra_tests
 {
@@ -61,15 +61,15 @@ inline void throwing_function( const throw_mode mode )
 
 inline bool dec_if_positive_via_out_argument( int val, int* result )
 {
-    assert( result );
+  assert( result );
 
-    if( val > 0 )
-    {
-        *result = val - 1;
-        return true;
-    }
+  if ( val > 0 )
+  {
+    *result = val - 1;
+    return true;
+  }
 
-    return false;
+  return false;
 }
 
 }  // namespace ra_tests
