@@ -7,7 +7,7 @@
 using namespace return_adapters;
 using namespace return_adapters::retval;
 
-TEST_CASE( "Check retval adapter with check_retval_is_zero predicate", "retval_adapter" )
+TEST_CASE( "Check retval adapter with 'check_retval_is_zero' predicate", "retval_adapter" )
 {
   constexpr auto* return_int_adapted = adapt<&ra_tests::return_int, check_retval_is_zero>();
   REQUIRE( return_int_adapted );

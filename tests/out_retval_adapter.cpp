@@ -1,14 +1,15 @@
 #include "catch2/catch.hpp"
 
 #include "return_adapters/out_retval_adapter.h"
+#include "return_adapters/predicates.h"
 #include "test_utils.h"
 
 using namespace return_adapters;
 using namespace return_adapters::out_retval;
 
-TEST_CASE( "Check out_retval adapter", "out_retval_adapter" )
+TEST_CASE( "Check 'out_retval_optional_adapter' with 'check_retval_is_true' predicate", "out_retval_adapter" )
 {
-  constexpr auto adapted_div = adapt<&ra_tests::divide>();
+  constexpr auto adapted_div = adapt<&ra_tests::divide, out_retval_optional_adapter<check_retval_is_true>>();
   REQUIRE( adapted_div );
 
   SECTION( "Valid function arguments" )

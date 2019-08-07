@@ -38,15 +38,9 @@ struct out_retval_adapter_impl<adaptee_func, OutRet, std::tuple<ArgsTuple...>, O
   static auto retval_adapted_func( ArgsTuple... args )
   {
     using OutRetVal = std::remove_pointer_t<OutRet>;
-    using OutRetOpt = std::optional<OutRetVal>;
 
     OutRetVal out_ret;
-    auto res = adaptee_func( std::forward<ArgsTuple>( args )..., &out_ret );
-    if ( res )
-    {
-      return OutRetOpt{ std::move( out_ret ) };
-    }
-    return OutRetOpt{};
+    return OutRetValAdapter{}( adaptee_func( std::forward<ArgsTuple>( args )..., &out_ret ), out_ret );
   }
 };
 
@@ -65,7 +59,21 @@ struct out_retval_adapter<adaptee_func, Ret ( * )( Args... ), OutRetValAdapter>
 
 }  // namespace details
 
-template <auto* func, typename OutRetValAdapter = void>
+template <typename RetChecker>
+struct out_retval_optional_adapter
+{
+    template <typename Ret, typename OutRet>
+    std::optional<OutRet> operator()( const Ret& ret, OutRet& out_ret )
+    {
+        if( RetChecker{}( ret ) )
+        {
+            return { std::move( out_ret ) };
+        }
+        return {};
+    }
+};
+
+template <auto* func, typename OutRetValAdapter>
 constexpr auto* adapt()
 {
   return details::out_retval_adapter<func, decltype( func ), OutRetValAdapter>::retval_adapted_func;

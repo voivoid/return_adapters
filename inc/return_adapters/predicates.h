@@ -24,6 +24,7 @@ struct check_retval_is_not_
 };
 
 using check_retval_is_zero      = check_retval_is_<0>;
+using check_retval_is_true      = check_retval_is_<true>;
 using check_retval_is_not_zero  = check_retval_is_not_<0>;
 using check_ret_ptr_is_not_null = check_retval_is_not_<nullptr>;
 
