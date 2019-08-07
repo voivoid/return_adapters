@@ -62,15 +62,15 @@ struct out_retval_adapter<adaptee_func, Ret ( * )( Args... ), OutRetValAdapter>
 template <typename RetChecker>
 struct out_retval_optional_adapter
 {
-    template <typename Ret, typename OutRet>
-    std::optional<OutRet> operator()( const Ret& ret, OutRet& out_ret )
+  template <typename Ret, typename OutRet>
+  std::optional<OutRet> operator()( const Ret& ret, OutRet& out_ret )
+  {
+    if ( RetChecker{}( ret ) )
     {
-        if( RetChecker{}( ret ) )
-        {
-            return { std::move( out_ret ) };
-        }
-        return {};
+      return { std::move( out_ret ) };
     }
+    return {};
+  }
 };
 
 template <auto* func, typename OutRetValAdapter>
