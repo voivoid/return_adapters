@@ -65,7 +65,7 @@ struct out_retval_adapter<adaptee_func, Ret ( * )( Args... ), OutRetValAdapter>
 
 }  // namespace details
 
-template <auto* func, typename OutRetValAdapter>
+template <auto* func, typename OutRetValAdapter = void>
 constexpr auto* adapt()
 {
   return details::out_retval_adapter<func, decltype( func ), OutRetValAdapter>::retval_adapted_func;

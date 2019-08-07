@@ -41,7 +41,7 @@ TEST_CASE( "Calling non-throwing adapted non-void functions", "non_throwing_adap
 
   SECTION( "the adaptee function throws a std exception" )
   {
-    auto result = dec_if_positive( -1 );
+    auto result = dec_if_positive( 0 );
     CHECK( !result );
   }
 }

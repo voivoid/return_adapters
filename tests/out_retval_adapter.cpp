@@ -6,25 +6,21 @@
 using namespace return_adapters;
 using namespace return_adapters::out_retval;
 
-struct foo
-{
-};
-
 TEST_CASE( "Check out_retval adapter", "out_retval_adapter" )
 {
-  constexpr auto adapted = adapt<&ra_tests::dec_if_positive_via_out_argument, foo>();
-  REQUIRE( adapted );
+  constexpr auto adapted_div = adapt<&ra_tests::divide>();
+  REQUIRE( adapted_div );
 
-  SECTION( "true" )
+  SECTION( "Valid function arguments" )
   {
-    auto res = adapted( 10 );
-    REQUIRE( res );
-    CHECK( *res == 9 );
+    std::optional<int> result = adapted_div( 6, 2 );
+    REQUIRE( result );
+    CHECK( *result == 3 );
   }
 
-  SECTION( "false" )
+  SECTION( "Invalid function arguments" )
   {
-    auto res = adapted( -1 );
+    std::optional<int> res = adapted_div( 6, 0 );
     CHECK( !res );
   }
 }

@@ -11,14 +11,14 @@ inline int return_int( const int val_to_return )
   return val_to_return;
 }
 
-inline int dec_if_positive( const int val )
+inline size_t dec_if_positive( const size_t val )
 {
   if ( val > 0 )
   {
     return val - 1;
   }
 
-  throw std::runtime_error( "negative value" );
+  throw std::runtime_error( "underflow" );
 }
 
 
@@ -59,13 +59,13 @@ inline void throwing_function( const throw_mode mode )
   }
 }
 
-inline bool dec_if_positive_via_out_argument( int val, int* result )
+inline bool divide( int a, int b, int* result )
 {
   assert( result );
 
-  if ( val > 0 )
+  if ( b != 0 )
   {
-    *result = val - 1;
+    *result = a / b;
     return true;
   }
 
