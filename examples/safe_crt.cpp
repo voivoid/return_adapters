@@ -8,10 +8,9 @@ namespace safe_crt
 {
 
 using namespace return_adapters;
-using namespace return_adapters::throwing;
 
 template <typename retval_predicate>
-using safe_crt_throwing_handler = generic_adapter_handler<retval_predicate, errno_str_exception_formatter, std::runtime_error>;
+using safe_crt_throwing_handler = throwing::generic_adapter_handler<retval_predicate, throwing::errno_str_exception_formatter, std::runtime_error>;
 
 constexpr auto fclose  = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fclose, safe_crt_throwing_handler<check_retval_is_zero> );
 constexpr auto feof    = retval::adapt<::feof, check_retval_is_zero>();

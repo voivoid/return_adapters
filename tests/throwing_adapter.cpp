@@ -7,12 +7,11 @@
 #include <stdexcept>
 
 using namespace return_adapters;
-using namespace return_adapters::throwing;
 
 TEST_CASE( "Check 'generic_adapter_handler' with 'check_retval_is_not_zero' predicate", "throwing_adapter" )
 {
   constexpr auto* return_int_throwing =
-      RETURN_ADAPTERS_ADAPT_TO_THROWING( ra_tests::return_int, generic_adapter_handler<check_retval_is_not_zero> );
+      RETURN_ADAPTERS_ADAPT_TO_THROWING( ra_tests::return_int, throwing::generic_adapter_handler<check_retval_is_not_zero> );
   REQUIRE( return_int_throwing );
 
   CHECK_NOTHROW( return_int_throwing( -1 ) );

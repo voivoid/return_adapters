@@ -5,11 +5,10 @@
 #include "test_utils.h"
 
 using namespace return_adapters;
-using namespace return_adapters::out_retval;
 
 TEST_CASE( "Check 'out_retval_optional_adapter' with 'check_retval_is_true' predicate", "out_retval_adapter" )
 {
-  constexpr auto adapted_div = adapt<&ra_tests::divide, out_retval_optional_adapter<check_retval_is_true>>();
+  constexpr auto adapted_div = out_retval::adapt<&ra_tests::divide, out_retval::out_retval_optional_adapter<check_retval_is_true>>();
   REQUIRE( adapted_div );
 
   SECTION( "Valid function arguments" )

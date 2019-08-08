@@ -7,6 +7,9 @@
 namespace return_adapters
 {
 
+namespace non_throwing
+{
+
 namespace details
 {
 template <auto* adaptee_func, typename Ret, typename... Args>
@@ -58,9 +61,11 @@ struct non_throwing_adapter<adaptee_func, Ret ( * )( Args... ), Handler>
 
 
 template <auto* func, template <auto*, typename, typename...> class Handler = details::default_exception_handler>
-constexpr auto* adapt_to_non_throwing_func()
+constexpr auto* adapt()
 {
   return &details::non_throwing_adapter<func, decltype( func ), Handler>::non_throwing_func;
+}
+
 }
 
 }  // namespace return_adapters

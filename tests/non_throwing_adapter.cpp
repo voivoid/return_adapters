@@ -29,7 +29,7 @@ struct handle_any_exception_handler
 
 TEST_CASE( "Calling non-throwing adapted non-void functions", "non_throwing_adapter" )
 {
-  constexpr auto* dec_if_positive = adapt_to_non_throwing_func<ra_tests::dec_if_positive>();
+  constexpr auto* dec_if_positive = non_throwing::adapt<ra_tests::dec_if_positive>();
   REQUIRE( dec_if_positive );
 
   SECTION( "The adaptee function throws no exception" )
@@ -48,7 +48,7 @@ TEST_CASE( "Calling non-throwing adapted non-void functions", "non_throwing_adap
 
 TEST_CASE( "Calling a non-throwing adapted void functions", "non_throwing_adapter" )
 {
-  constexpr auto* almost_non_throwing_function = adapt_to_non_throwing_func<ra_tests::throwing_function>();
+  constexpr auto* almost_non_throwing_function = non_throwing::adapt<ra_tests::throwing_function>();
   REQUIRE( almost_non_throwing_function );
 
   SECTION( "The adaptee function throws no exception" )
@@ -71,7 +71,7 @@ TEST_CASE( "Calling a non-throwing adapted void functions", "non_throwing_adapte
 
 TEST_CASE( "Calling a non-throwing adapted functions with custom handler", "non_throwing_adapter" )
 {
-  constexpr auto* non_throwing_function = adapt_to_non_throwing_func<ra_tests::throwing_function, handle_any_exception_handler>();
+  constexpr auto* non_throwing_function = non_throwing::adapt<ra_tests::throwing_function, handle_any_exception_handler>();
   REQUIRE( non_throwing_function );
 
   CHECK_NOTHROW( non_throwing_function( ra_tests::throw_mode::throw_std_exception ) );
