@@ -10,7 +10,8 @@ namespace safe_crt
 using namespace return_adapters;
 
 template <typename retval_predicate>
-using safe_crt_throwing_handler = throwing::generic_adapter_handler<retval_predicate, throwing::errno_str_exception_formatter, std::runtime_error>;
+using safe_crt_throwing_handler =
+    throwing::generic_adapter_handler<retval_predicate, throwing::errno_str_exception_formatter, std::runtime_error>;
 
 constexpr auto fclose  = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fclose, safe_crt_throwing_handler<check_retval_is_zero> );
 constexpr auto feof    = retval::adapt<::feof, check_retval_is_zero>();
@@ -21,11 +22,11 @@ constexpr auto fgetpos = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fgetpos, safe_crt_
 constexpr auto fgets   = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fgets, safe_crt_throwing_handler<check_ret_ptr_is_not_null> );
 constexpr auto fopen   = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fopen, safe_crt_throwing_handler<check_ret_ptr_is_not_null> );
 //             fprintf
-constexpr auto fputc   = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fputc, safe_crt_throwing_handler<check_retval_is_not_<EOF>> );
-constexpr auto fputs   = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fputs, safe_crt_throwing_handler<check_retval_is_not_<EOF>> );
+constexpr auto fputc = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fputc, safe_crt_throwing_handler<check_retval_is_not_<EOF>> );
+constexpr auto fputs = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fputs, safe_crt_throwing_handler<check_retval_is_not_<EOF>> );
 //             fread
 constexpr auto freopen = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::freopen, safe_crt_throwing_handler<check_ret_ptr_is_not_null> );
 //             fscanf
-constexpr auto fseek   = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fseek, safe_crt_throwing_handler<check_retval_is_zero> );
+constexpr auto fseek = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fseek, safe_crt_throwing_handler<check_retval_is_zero> );
 
 }  // namespace safe_crt

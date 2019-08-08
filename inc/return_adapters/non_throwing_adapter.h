@@ -66,6 +66,6 @@ constexpr auto* adapt()
   return &details::non_throwing_adapter<func, decltype( func ), Handler>::non_throwing_func;
 }
 
-}
+}  // namespace non_throwing
 
 }  // namespace return_adapters
