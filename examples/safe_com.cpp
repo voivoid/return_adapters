@@ -31,7 +31,7 @@ using safe_com_throwing_handler = throwing::generic_adapter_handler<is_hresult_s
 
 constexpr auto CoInitialize     = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::CoInitialize, safe_com_throwing_handler );
 constexpr auto CoCreateGuid     = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::CoCreateGuid, safe_com_throwing_handler );
-constexpr auto CoCreateInstance = out_retval::adapt<&::CoCreateInstance, out_retval::out_retval_optional_adapter<is_hresult_succeeded_predicate>>();
+constexpr auto CoCreateInstance = out_retval::adapt<&::CoCreateInstance, out_retval::adapter_to_optional<is_hresult_succeeded_predicate>>();
 constexpr auto IIDFromString    = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::IIDFromString, safe_com_throwing_handler );
 constexpr auto StringFromIID    = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::StringFromIID, safe_com_throwing_handler );
 }  // namespace safe_com
