@@ -45,10 +45,10 @@ struct out_retval_adapter_impl<adaptee_func, OutRet, std::tuple<ArgsTuple...>, O
 };
 
 template <auto* adaptee_func, typename FuncType, typename OutRetValAdapter>
-struct out_retval_adapter;
+struct adapter;
 
 template <auto* adaptee_func, typename Ret, typename... Args, typename OutRetValAdapter>
-struct out_retval_adapter<adaptee_func, Ret ( * )( Args... ), OutRetValAdapter>
+struct adapter<adaptee_func, Ret ( * )( Args... ), OutRetValAdapter>
 {
   using OutRet    = typename std::tuple_element<sizeof...( Args ) - 1, std::tuple<Args...>>::type;
   using ArgsTuple = typename remove_last_argument<Args...>::ResultTuple;
@@ -60,7 +60,7 @@ struct out_retval_adapter<adaptee_func, Ret ( * )( Args... ), OutRetValAdapter>
 }  // namespace details
 
 template <typename RetChecker>
-struct out_retval_optional_adapter
+struct adapter_to_optional
 {
   template <typename Ret, typename OutRet>
   std::optional<OutRet> operator()( const Ret& ret, OutRet& out_ret )
@@ -76,7 +76,7 @@ struct out_retval_optional_adapter
 template <auto* func, typename OutRetValAdapter>
 constexpr auto* adapt()
 {
-  return details::out_retval_adapter<func, decltype( func ), OutRetValAdapter>::retval_adapted_func;
+  return details::adapter<func, decltype( func ), OutRetValAdapter>::retval_adapted_func;
 }
 
 }  // namespace out_retval

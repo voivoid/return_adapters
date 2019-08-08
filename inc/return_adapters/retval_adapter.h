@@ -12,10 +12,10 @@ namespace retval
 namespace details
 {
 template <auto* adaptee_func, typename FuncType, typename RetValAdapter>
-struct retval_adapter;
+struct adapter;
 
 template <auto* adaptee_func, typename Ret, typename... Args, typename RetValAdapter>
-struct retval_adapter<adaptee_func, Ret ( * )( Args... ), RetValAdapter>
+struct adapter<adaptee_func, Ret ( * )( Args... ), RetValAdapter>
 {
   static auto retval_adapted_func( Args... args )
   {
@@ -24,7 +24,7 @@ struct retval_adapter<adaptee_func, Ret ( * )( Args... ), RetValAdapter>
 };
 
 template <auto* adaptee_func, typename Ret, typename... Args, typename RetValAdapter>
-struct retval_adapter<adaptee_func, Ret ( * )( Args... ) throw(), RetValAdapter>
+struct adapter<adaptee_func, Ret ( * )( Args... ) throw(), RetValAdapter>
 {
   static auto retval_adapted_func( Args... args )
   {
@@ -34,7 +34,7 @@ struct retval_adapter<adaptee_func, Ret ( * )( Args... ) throw(), RetValAdapter>
 
 }  // namespace details
 
-struct adapter_id
+struct transform_id
 {
   template <typename T>
   auto&& operator()( T&& t ) const
@@ -43,17 +43,17 @@ struct adapter_id
   }
 };
 
-template <typename Predicate, typename Adapter = adapter_id>
-struct to_optional
+template <typename Predicate, typename Transform = transform_id>
+struct adapter_to_optional
 {
   template <typename T>
   auto operator()( T&& retval ) const
   {
-    using AdaptedType = std::decay_t<decltype( Adapter{}( std::forward<T>( retval ) ) )>;
+    using AdaptedType = std::decay_t<decltype( Transform{}( std::forward<T>( retval ) ) )>;
     using Optional    = std::optional<AdaptedType>;
     if ( Predicate{}( retval ) )
     {
-      return Optional{ Adapter{}( std::forward<T>( retval ) ) };
+      return Optional{ Transform{}( std::forward<T>( retval ) ) };
     }
 
     return Optional{};
@@ -63,7 +63,7 @@ struct to_optional
 template <auto* func, typename RetValAdapter>
 constexpr auto* adapt()
 {
-  return &details::retval_adapter<func, decltype( func ), RetValAdapter>::retval_adapted_func;
+  return &details::adapter<func, decltype( func ), RetValAdapter>::retval_adapted_func;
 }
 
 }  // namespace retval

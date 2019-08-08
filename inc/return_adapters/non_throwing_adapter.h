@@ -13,7 +13,7 @@ namespace non_throwing
 namespace details
 {
 template <auto* adaptee_func, typename Ret, typename... Args>
-struct default_exception_handler
+struct generic_exception_handler
 {
   std::optional<Ret> operator()( Args... args ) const
   {
@@ -29,7 +29,7 @@ struct default_exception_handler
 };
 
 template <auto* adaptee_func, typename... Args>
-struct default_exception_handler<adaptee_func, void, Args...>
+struct generic_exception_handler<adaptee_func, void, Args...>
 {
   bool operator()( Args... args ) const
   {
@@ -46,10 +46,10 @@ struct default_exception_handler<adaptee_func, void, Args...>
 };
 
 template <auto* adaptee_func, typename FuncType, template <auto*, typename, typename...> class Handler>
-struct non_throwing_adapter;
+struct adapter;
 
 template <auto* adaptee_func, template <auto*, typename, typename...> class Handler, typename Ret, typename... Args>
-struct non_throwing_adapter<adaptee_func, Ret ( * )( Args... ), Handler>
+struct adapter<adaptee_func, Ret ( * )( Args... ), Handler>
 {
   static auto non_throwing_func( Args... args )
   {
@@ -60,10 +60,10 @@ struct non_throwing_adapter<adaptee_func, Ret ( * )( Args... ), Handler>
 
 
 
-template <auto* func, template <auto*, typename, typename...> class Handler = details::default_exception_handler>
+template <auto* func, template <auto*, typename, typename...> class Handler = details::generic_exception_handler>
 constexpr auto* adapt()
 {
-  return &details::non_throwing_adapter<func, decltype( func ), Handler>::non_throwing_func;
+  return &details::adapter<func, decltype( func ), Handler>::non_throwing_func;
 }
 
 }  // namespace non_throwing
