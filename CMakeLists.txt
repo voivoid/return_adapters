@@ -20,7 +20,8 @@ target_sources(return_adapters INTERFACE ${headers_dir}/non_throwing_adapter.h
                                          ${headers_dir}/throwing_adapter.h
                                          ${headers_dir}/retval_adapter.h
                                          ${headers_dir}/out_retval_adapter.h
-                                         ${headers_dir}/predicates.h)
+                                         ${headers_dir}/predicates.h
+                                         ${headers_dir}/raii_adapter.h)
 
 target_include_directories(return_adapters INTERFACE inc)
 

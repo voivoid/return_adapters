@@ -1,5 +1,6 @@
 #include "return_adapters/predicates.h"
 #include "return_adapters/retval_adapter.h"
+#include "return_adapters/raii_adapter.h"
 #include "return_adapters/throwing_adapter.h"
 
 #include <cstdio>
@@ -30,3 +31,13 @@ constexpr auto freopen = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::freopen, safe_crt_
 constexpr auto fseek = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fseek, safe_crt_throwing_handler<check_retval_is_zero> );
 
 }  // namespace safe_crt
+
+namespace
+{
+
+void example()
+{
+    safe_crt::fopen("file.txt", "r");
+}
+
+}

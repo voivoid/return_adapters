@@ -88,12 +88,14 @@ template <typename RetValuePredicate, typename ExceptionMsgFormatter = generic_e
 struct generic_adapter_handler
 {
   template <typename Result>
-  void operator()( const char* const func_name, const Result result ) const
+  Result operator()( const char* const func_name, const Result result ) const
   {
     if ( !RetValuePredicate{}( result ) )
     {
       throw Exception( ExceptionMsgFormatter{}( func_name, result ) );
     }
+
+    return result;
   }
 };
 
