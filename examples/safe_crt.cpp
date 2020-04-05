@@ -1,6 +1,6 @@
 #include "return_adapters/predicates.h"
-#include "return_adapters/retval_adapter.h"
 #include "return_adapters/raii_adapter.h"
+#include "return_adapters/retval_adapter.h"
 #include "return_adapters/throwing_adapter.h"
 
 #include <cstdio>
@@ -37,7 +37,7 @@ namespace
 
 void example()
 {
-    safe_crt::fopen("file.txt", "r");
+  safe_crt::fopen( "file.txt", "r" );
 }
 
-}
+}  // namespace

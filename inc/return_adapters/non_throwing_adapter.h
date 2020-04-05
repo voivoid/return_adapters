@@ -5,8 +5,8 @@
 
 #include <optional>
 #include <stdexcept>
-#include <utility>
 #include <tuple>
+#include <utility>
 
 namespace return_adapters
 {
@@ -67,11 +67,9 @@ struct adapter<adaptee_func, Ret, std::tuple<Args...>, Handler>
 template <auto* func, template <auto*, typename, typename...> class Handler = details::generic_exception_handler>
 constexpr auto* adapt()
 {
-  using FuncType = decltype (func);
-  return &details::adapter<func,
-                           boost::callable_traits::return_type_t<FuncType>,
-                           boost::callable_traits::args_t<FuncType>,
-                           Handler>::non_throwing_func;
+  using FuncType = decltype( func );
+  return &details::adapter<func, boost::callable_traits::return_type_t<FuncType>, boost::callable_traits::args_t<FuncType>, Handler>::
+      non_throwing_func;
 }
 
 }  // namespace non_throwing

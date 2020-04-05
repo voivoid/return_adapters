@@ -12,29 +12,30 @@ TEST_CASE( "Check 'out_retval_optional_adapter' with 'check_retval_is_true' pred
   REQUIRE( adapted_div );
 
   {
-    std::optional<int> result = adapted_div(6, 2);
-    CHECK(result);
-    CHECK(*result == 3);
+    std::optional<int> result = adapted_div( 6, 2 );
+    CHECK( result );
+    CHECK( *result == 3 );
   }
 
   {
-    std::optional<int> result = adapted_div(6, 0);
-    CHECK(!result);
+    std::optional<int> result = adapted_div( 6, 0 );
+    CHECK( !result );
   }
 
   // TODO: get rid of copy-paste by parametrizing the test
 
-  constexpr auto adapted_div_with_1st_out_arg = out_retval::adapt<&ra_tests::divide_with_1st_out_arg, out_retval::to_optional<check_retval_is_true>, out_retval::first>();
-  REQUIRE(adapted_div_with_1st_out_arg);
+  constexpr auto adapted_div_with_1st_out_arg =
+      out_retval::adapt<&ra_tests::divide_with_1st_out_arg, out_retval::to_optional<check_retval_is_true>, out_retval::first>();
+  REQUIRE( adapted_div_with_1st_out_arg );
 
   {
-    std::optional<int> result = adapted_div_with_1st_out_arg(6, 2);
-    CHECK(result);
-    CHECK(*result == 3);
+    std::optional<int> result = adapted_div_with_1st_out_arg( 6, 2 );
+    CHECK( result );
+    CHECK( *result == 3 );
   }
 
   {
-    std::optional<int> result = adapted_div_with_1st_out_arg(6, 0);
-    CHECK(!result);
+    std::optional<int> result = adapted_div_with_1st_out_arg( 6, 0 );
+    CHECK( !result );
   }
 }

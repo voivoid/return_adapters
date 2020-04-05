@@ -6,11 +6,26 @@
 namespace ra_tests
 {
 
-inline int ret_int_take_int( const int val ) { return val; }
-inline int ret_int_take_intref( int& val ) { return val; }
-inline int ret_int_take_intcref( const int& val ) { return val; }
-inline int& ret_intref_take_intref( int& val ) { return val; }
-inline const int& ret_intcref_take_intcref( const int& val ) { return val; }
+inline int ret_int_take_int( const int val )
+{
+  return val;
+}
+inline int ret_int_take_intref( int& val )
+{
+  return val;
+}
+inline int ret_int_take_intcref( const int& val )
+{
+  return val;
+}
+inline int& ret_intref_take_intref( int& val )
+{
+  return val;
+}
+inline const int& ret_intcref_take_intcref( const int& val )
+{
+  return val;
+}
 
 inline size_t dec_if_positive( const size_t val )
 {
@@ -73,9 +88,9 @@ inline bool divide( int a, int b, int* result )
   return false;
 }
 
-inline bool divide_with_1st_out_arg(int* result, int a, int b)
+inline bool divide_with_1st_out_arg( int* result, int a, int b )
 {
-  return divide(a, b, result);
+  return divide( a, b, result );
 }
 
 }  // namespace ra_tests

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "typestring.hh"
 #include "boost/callable_traits/args.hpp"
+#include "typestring.hh"
 
 #include <cstring>
 #include <sstream>
@@ -94,7 +94,7 @@ struct generic_adapter_handler
 template <auto* func, typename AdapteeFuncName, typename RetValHandler>
 constexpr auto* adapt()
 {
-  return &details::adapter<func, boost::callable_traits::args_t<decltype(func)>, AdapteeFuncName, RetValHandler>::throwing_func;
+  return &details::adapter<func, boost::callable_traits::args_t<decltype( func )>, AdapteeFuncName, RetValHandler>::throwing_func;
 }
 
 }  // namespace throwing

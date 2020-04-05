@@ -5,8 +5,8 @@
 #include "boost/callable_traits/args.hpp"
 
 #include <optional>
-#include <utility>
 #include <tuple>
+#include <utility>
 
 namespace return_adapters
 {
@@ -51,7 +51,7 @@ struct to_optional
 template <auto* func, typename RetValAdapter>
 constexpr auto* adapt()
 {
-  return &details::adapter<func, boost::callable_traits::args_t<decltype (func)>, RetValAdapter>::retval_adapted_func;
+  return &details::adapter<func, boost::callable_traits::args_t<decltype( func )>, RetValAdapter>::retval_adapted_func;
 }
 
 }  // namespace retval

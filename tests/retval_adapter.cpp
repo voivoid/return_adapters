@@ -13,7 +13,7 @@ TEST_CASE( "Check retval adapter with 'check_retval_is_zero' predicate", "retval
 
 
   constexpr auto* adapted = retval::adapt<&ra_tests::ret_int_take_int, check_retval_is_zero>();
-  static_assert (std::is_same<bool(*const)(int), decltype (adapted)>::value, "Adapted type mismatches");
+  static_assert( std::is_same<bool ( *const )( int ), decltype( adapted )>::value, "Adapted type mismatches" );
 
   REQUIRE( adapted );
 
@@ -23,12 +23,12 @@ TEST_CASE( "Check retval adapter with 'check_retval_is_zero' predicate", "retval
   // TODO: test all ret_int_take_int combinations
   {
     constexpr auto* adapted = retval::adapt<&ra_tests::ret_int_take_intref, check_retval_is_zero>();
-    static_assert (std::is_same<bool(*const)(int&), decltype (adapted)>::value, "Adapted type mismatches");
+    static_assert( std::is_same<bool ( *const )( int& ), decltype( adapted )>::value, "Adapted type mismatches" );
   }
 
   {
     constexpr auto* adapted = retval::adapt<&ra_tests::ret_int_take_intcref, check_retval_is_zero>();
-    static_assert (std::is_same<bool(*const)(const int&), decltype (adapted)>::value, "Adapted type mismatches");
+    static_assert( std::is_same<bool ( *const )( const int& ), decltype( adapted )>::value, "Adapted type mismatches" );
   }
 }
 
