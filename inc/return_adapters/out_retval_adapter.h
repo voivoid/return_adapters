@@ -1,5 +1,7 @@
 #pragma once
 
+#include "boost/callable_traits/args.hpp"
+
 #include <optional>
 #include <tuple>
 
@@ -44,11 +46,11 @@ struct out_retval_adapter_impl<adaptee_func, OutRet, std::tuple<ArgsTuple...>, O
   }
 };
 
-template <auto* adaptee_func, typename FuncType, typename OutRetValAdapter>
+template <auto* adaptee_func, typename ArgsTuple, typename OutRetValAdapter>
 struct adapter;
 
-template <auto* adaptee_func, typename Ret, typename... Args, typename OutRetValAdapter>
-struct adapter<adaptee_func, Ret ( * )( Args... ), OutRetValAdapter>
+template <auto* adaptee_func, typename... Args, typename OutRetValAdapter>
+struct adapter<adaptee_func, std::tuple<Args...>, OutRetValAdapter>
 {
   using OutRet    = typename std::tuple_element<sizeof...( Args ) - 1, std::tuple<Args...>>::type;
   using ArgsTuple = typename remove_last_argument<Args...>::ResultTuple;
@@ -60,7 +62,7 @@ struct adapter<adaptee_func, Ret ( * )( Args... ), OutRetValAdapter>
 }  // namespace details
 
 template <typename RetChecker>
-struct adapter_to_optional
+struct to_optional
 {
   template <typename Ret, typename OutRet>
   std::optional<OutRet> operator()( const Ret& ret, OutRet& out_ret )
@@ -76,7 +78,7 @@ struct adapter_to_optional
 template <auto* func, typename OutRetValAdapter>
 constexpr auto* adapt()
 {
-  return details::adapter<func, decltype( func ), OutRetValAdapter>::retval_adapted_func;
+  return details::adapter<func, boost::callable_traits::args_t<decltype (func)>, OutRetValAdapter>::retval_adapted_func;
 }
 
 }  // namespace out_retval

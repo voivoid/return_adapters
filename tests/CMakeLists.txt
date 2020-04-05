@@ -8,7 +8,7 @@ add_executable(return_adapters_tests ${tests_dir}/main.cpp
                                      ${tests_dir}/test_utils.h)
 
 
-target_link_libraries(return_adapters_tests PRIVATE return_adapters Catch::v2)
+target_link_libraries(return_adapters_tests PRIVATE return_adapters Catch2::lib)
 
 add_test(NAME return_adapters_tests
          COMMAND $<TARGET_FILE:return_adapters_tests>)

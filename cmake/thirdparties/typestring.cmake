@@ -16,7 +16,7 @@ ExternalProject_Add(
   )
 
 add_library(typestring INTERFACE)
-add_library(TypeString::TypeString ALIAS typestring)
+add_library(TypeString::lib ALIAS typestring)
 
 ExternalProject_Get_Property(get_typestring SOURCE_DIR)
 set_target_properties(typestring PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${SOURCE_DIR})
