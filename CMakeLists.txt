@@ -15,6 +15,9 @@ include(cmake/thirdparties/typestring.cmake)
 
 add_library(return_adapters INTERFACE)
 target_link_libraries(return_adapters INTERFACE TypeString::lib CallableTraits::lib)
+if(WIN32)
+  target_compile_options(return_adapters INTERFACE /permissive-)
+endif()
 
 set(headers_dir ${CMAKE_CURRENT_SOURCE_DIR}/inc/return_adapters)
 target_sources(return_adapters INTERFACE ${headers_dir}/non_throwing_adapter.h
