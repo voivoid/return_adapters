@@ -1,5 +1,6 @@
 #pragma once
 
+#include "tuple_utils.h"
 #include "boost/callable_traits/args.hpp"
 
 #include <optional>
@@ -16,47 +17,33 @@ namespace out_retval
 namespace details
 {
 
-template <typename... Ts>
-using tuple_cat_t = decltype( std::tuple_cat( std::declval<Ts>()... ) );
-
-template <typename T, typename... Args>
-struct remove_last_argument
-{
-  using ResultTuple = tuple_cat_t<std::tuple<T>, typename remove_last_argument<Args...>::ResultTuple>;
-};
-
-template <typename T>
-struct remove_last_argument<T>
-{
-  using ResultTuple = std::tuple<>;
-};
-
-template <auto* adaptee_func, typename OutRet, typename ArgsTuple, typename OutRetValAdapter>
+template <auto* adaptee_func, typename OutRet, typename ArgsBefore, typename ArgsAfter, typename OutRetValAdapter>
 struct out_retval_adapter_impl;
 
-template <auto* adaptee_func, typename OutRet, typename... ArgsTuple, typename OutRetValAdapter>
-struct out_retval_adapter_impl<adaptee_func, OutRet, std::tuple<ArgsTuple...>, OutRetValAdapter>
+template <auto* adaptee_func, typename OutRet, typename... ArgsBefore, typename... ArgsAfter, typename OutRetValAdapter>
+struct out_retval_adapter_impl<adaptee_func, OutRet, std::tuple<ArgsBefore...>, std::tuple<ArgsAfter...>, OutRetValAdapter>
 {
-  static auto retval_adapted_func( ArgsTuple... args )
+  static auto retval_adapted_func(ArgsBefore... argsBefore, ArgsAfter... argsAfter)
   {
     using OutRetVal = std::remove_pointer_t<OutRet>;
 
     OutRetVal out_ret;
-    return OutRetValAdapter{}( adaptee_func( std::forward<ArgsTuple>( args )..., &out_ret ), out_ret );
+    return OutRetValAdapter{}(adaptee_func(std::forward<ArgsBefore>(argsBefore)..., &out_ret, std::forward<ArgsAfter>(argsAfter)...), out_ret );
   }
 };
 
-template <auto* adaptee_func, typename ArgsTuple, typename OutRetValAdapter>
+template <auto* adaptee_func, typename ArgsTuple, typename OutRetValAdapter, size_t out_argument_index>
 struct adapter;
 
-template <auto* adaptee_func, typename... Args, typename OutRetValAdapter>
-struct adapter<adaptee_func, std::tuple<Args...>, OutRetValAdapter>
+template <auto* adaptee_func, typename... Args, typename OutRetValAdapter, size_t out_argument_index>
+struct adapter<adaptee_func, std::tuple<Args...>, OutRetValAdapter, out_argument_index>
 {
-  using OutRet    = typename std::tuple_element<sizeof...( Args ) - 1, std::tuple<Args...>>::type;
-  using ArgsTuple = typename remove_last_argument<Args...>::ResultTuple;
+  using OutRet    = typename std::tuple_element<out_argument_index, std::tuple<Args...>>::type;
+  using ArgsBefore = typename take_until< out_argument_index, Args...>::ResultTuple;
+  using ArgsAfter = typename drop_until< out_argument_index, Args...>::ResultTuple;
 
   static constexpr auto retval_adapted_func =
-      out_retval_adapter_impl<adaptee_func, OutRet, ArgsTuple, OutRetValAdapter>::retval_adapted_func;
+      out_retval_adapter_impl<adaptee_func, OutRet, ArgsBefore, ArgsAfter, OutRetValAdapter>::retval_adapted_func;
 };
 
 }  // namespace details
@@ -75,10 +62,17 @@ struct to_optional
   }
 };
 
-template <auto* func, typename OutRetValAdapter>
+constexpr size_t first = 0;
+constexpr size_t last = size_t(std::numeric_limits<size_t>::max());
+
+template <auto* func, typename OutRetValAdapter, size_t out_argument = last>
 constexpr auto* adapt()
 {
-  return details::adapter<func, boost::callable_traits::args_t<decltype (func)>, OutRetValAdapter>::retval_adapted_func;
+  using ArgsTuple = boost::callable_traits::args_t<decltype (func)>;
+  constexpr size_t args_num = std::tuple_size_v<ArgsTuple>;
+  constexpr size_t out_argument_index = out_argument == last ? args_num - 1 : out_argument;
+
+  return details::adapter<func, ArgsTuple, OutRetValAdapter, out_argument_index>::retval_adapted_func;
 }
 
 }  // namespace out_retval

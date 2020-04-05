@@ -73,4 +73,9 @@ inline bool divide( int a, int b, int* result )
   return false;
 }
 
+inline bool divide_with_1st_out_arg(int* result, int a, int b)
+{
+  return divide(a, b, result);
+}
+
 }  // namespace ra_tests
