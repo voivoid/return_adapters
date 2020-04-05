@@ -1,8 +1,12 @@
 #pragma once
 
+#include "boost/callable_traits/args.hpp"
+#include "boost/callable_traits/return_type.hpp"
+
 #include <optional>
 #include <stdexcept>
 #include <utility>
+#include <tuple>
 
 namespace return_adapters
 {
@@ -45,11 +49,11 @@ struct generic_exception_handler<adaptee_func, void, Args...>
   }
 };
 
-template <auto* adaptee_func, typename FuncType, template <auto*, typename, typename...> class Handler>
+template <auto* adaptee_func, typename Ret, typename ArgsTuple, template <auto*, typename, typename...> class Handler>
 struct adapter;
 
-template <auto* adaptee_func, template <auto*, typename, typename...> class Handler, typename Ret, typename... Args>
-struct adapter<adaptee_func, Ret ( * )( Args... ), Handler>
+template <auto* adaptee_func, typename Ret, typename... Args, template <auto*, typename, typename...> class Handler>
+struct adapter<adaptee_func, Ret, std::tuple<Args...>, Handler>
 {
   static auto non_throwing_func( Args... args )
   {
@@ -63,7 +67,11 @@ struct adapter<adaptee_func, Ret ( * )( Args... ), Handler>
 template <auto* func, template <auto*, typename, typename...> class Handler = details::generic_exception_handler>
 constexpr auto* adapt()
 {
-  return &details::adapter<func, decltype( func ), Handler>::non_throwing_func;
+  using FuncType = decltype (func);
+  return &details::adapter<func,
+                           boost::callable_traits::return_type_t<FuncType>,
+                           boost::callable_traits::args_t<FuncType>,
+                           Handler>::non_throwing_func;
 }
 
 }  // namespace non_throwing

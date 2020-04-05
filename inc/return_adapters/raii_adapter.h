@@ -32,7 +32,7 @@ struct adapter_to_custom_unique_ptr
 template <auto* func, typename RaiiAdapter = adapter_to_unique_ptr>
 constexpr auto* adapt()
 {
-  return &retval::details::adapter<func, decltype( func ), RaiiAdapter>::retval_adapted_func;
+  return retval::adapt<func, RaiiAdapter>();
 }
 
 

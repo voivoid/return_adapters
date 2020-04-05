@@ -7,13 +7,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 include(cmake/thirdparties/catch2.cmake)
+include(cmake/thirdparties/callabletraits.cmake)
 include(cmake/thirdparties/typestring.cmake)
 
 
 # return_adapters
 
 add_library(return_adapters INTERFACE)
-target_link_libraries(return_adapters INTERFACE TypeString::TypeString)
+target_link_libraries(return_adapters INTERFACE TypeString::lib CallableTraits::lib)
 
 set(headers_dir ${CMAKE_CURRENT_SOURCE_DIR}/inc/return_adapters)
 target_sources(return_adapters INTERFACE ${headers_dir}/non_throwing_adapter.h

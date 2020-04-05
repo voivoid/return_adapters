@@ -1,6 +1,6 @@
 .idea
 
-CMakeLists.txt.user
+CMakeLists.txt.user*
 
 # Prerequisites
 *.d

@@ -1,8 +1,12 @@
 #pragma once
 
+#include "predicates.h"
+
+#include "boost/callable_traits/args.hpp"
+
 #include <optional>
-#include <type_traits>
 #include <utility>
+#include <tuple>
 
 namespace return_adapters
 {
@@ -11,20 +15,11 @@ namespace retval
 
 namespace details
 {
-template <auto* adaptee_func, typename FuncType, typename RetValAdapter>
+template <auto* adaptee_func, typename ArgsTuple, typename RetValAdapter>
 struct adapter;
 
-template <auto* adaptee_func, typename Ret, typename... Args, typename RetValAdapter>
-struct adapter<adaptee_func, Ret ( * )( Args... ), RetValAdapter>
-{
-  static auto retval_adapted_func( Args... args )
-  {
-    return RetValAdapter()( adaptee_func( std::forward<Args>( args )... ) );
-  }
-};
-
-template <auto* adaptee_func, typename Ret, typename... Args, typename RetValAdapter>
-struct adapter<adaptee_func, Ret ( * )( Args... ) throw(), RetValAdapter>
+template <auto* adaptee_func, typename... Args, typename RetValAdapter>
+struct adapter<adaptee_func, std::tuple<Args...>, RetValAdapter>
 {
   static auto retval_adapted_func( Args... args )
   {
@@ -34,17 +29,10 @@ struct adapter<adaptee_func, Ret ( * )( Args... ) throw(), RetValAdapter>
 
 }  // namespace details
 
-struct transform_id
-{
-  template <typename T>
-  auto&& operator()( T&& t ) const
-  {
-    return std::forward<T>( t );
-  }
-};
 
-template <typename Predicate, typename Transform = transform_id>
-struct adapter_to_optional
+
+template <typename Predicate, typename Transform = id>
+struct to_optional
 {
   template <typename T>
   auto operator()( T&& retval ) const
@@ -63,7 +51,7 @@ struct adapter_to_optional
 template <auto* func, typename RetValAdapter>
 constexpr auto* adapt()
 {
-  return &details::adapter<func, decltype( func ), RetValAdapter>::retval_adapted_func;
+  return &details::adapter<func, boost::callable_traits::args_t<decltype (func)>, RetValAdapter>::retval_adapted_func;
 }
 
 }  // namespace retval

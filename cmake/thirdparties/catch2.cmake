@@ -16,7 +16,7 @@ ExternalProject_Add(
   )
 
 add_library(catch2 INTERFACE)
-add_library(Catch::v2 ALIAS catch2)
+add_library(Catch2::lib ALIAS catch2)
 
 ExternalProject_Get_Property(get_catch2 SOURCE_DIR)
 set_target_properties(catch2 PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${SOURCE_DIR}/single_include)

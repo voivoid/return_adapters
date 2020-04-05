@@ -1,5 +1,7 @@
 #pragma once
 
+#include <utility>
+
 namespace return_adapters
 {
 
@@ -20,6 +22,15 @@ struct check_retval_is_not_
   bool operator()( const RetVal& retval ) const
   {
     return !check_retval_is_<expected>{}( retval );
+  }
+};
+
+struct id
+{
+  template <typename T>
+  auto&& operator()( T&& t ) const
+  {
+    return std::forward<T>( t );
   }
 };
 
