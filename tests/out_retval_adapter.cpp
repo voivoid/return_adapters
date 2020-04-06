@@ -25,7 +25,7 @@ TEST_CASE( "Check 'out_retval_optional_adapter' with 'check_retval_is_true' pred
   // TODO: get rid of copy-paste by parametrizing the test
 
   constexpr auto adapted_div_with_1st_out_arg =
-      out_retval::adapt<&ra_tests::divide_with_1st_out_arg, out_retval::to_optional<check_retval_is_true>, out_retval::first>();
+      out_retval::adapt<&ra_tests::divide_with_1st_out_arg, out_retval::to_optional<check_retval_is_true>, out_retval::first_arg>();
   REQUIRE( adapted_div_with_1st_out_arg );
 
   {

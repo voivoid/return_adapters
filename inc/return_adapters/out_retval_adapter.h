@@ -63,15 +63,15 @@ struct to_optional
   }
 };
 
-constexpr size_t first = 0;
-constexpr size_t last  = size_t( std::numeric_limits<size_t>::max() );
+constexpr size_t first_arg = 0;
+constexpr size_t last_arg  = size_t( std::numeric_limits<size_t>::max() );
 
-template <auto* func, typename OutRetValAdapter, size_t out_argument = last>
+template <auto* func, typename OutRetValAdapter, size_t out_argument = last_arg>
 constexpr auto* adapt()
 {
   using ArgsTuple                     = boost::callable_traits::args_t<decltype( func )>;
   constexpr size_t args_num           = std::tuple_size_v<ArgsTuple>;
-  constexpr size_t out_argument_index = out_argument == last ? args_num - 1 : out_argument;
+  constexpr size_t out_argument_index = out_argument == last_arg ? args_num - 1 : out_argument;
 
   return details::adapter<func, ArgsTuple, OutRetValAdapter, out_argument_index>::retval_adapted_func;
 }
