@@ -76,15 +76,26 @@ struct errno_str_exception_formatter
   }
 };
 
-template <typename RetValuePredicate, typename ExceptionMsgFormatter = generic_exception_formatter, typename Exception = std::runtime_error>
+template <typename ExceptionMsgFormatter = generic_exception_formatter,
+          typename Exception = std::runtime_error>
+struct generic_exception_maker
+{
+  template <typename Result>
+  Exception operator()(const char* const func_name, Result result) const
+  {
+    return Exception(ExceptionMsgFormatter{}(func_name, std::move(result)));
+  }
+};
+
+template <typename RetValuePredicate, typename ExceptionMaker = generic_exception_maker<> >
 struct generic_adapter_handler
 {
   template <typename Result>
-  Result operator()( const char* const func_name, const Result result ) const
+  Result operator()( const char* const func_name, Result result ) const
   {
     if ( !RetValuePredicate{}( result ) )
     {
-      throw Exception( ExceptionMsgFormatter{}( func_name, result ) );
+      throw ExceptionMaker{}(func_name, std::move(result));
     }
 
     return result;

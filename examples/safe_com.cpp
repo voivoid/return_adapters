@@ -27,7 +27,7 @@ struct is_hresult_succeeded_predicate
     }
 };
 
-using safe_com_throwing_handler = throwing::generic_adapter_handler<is_hresult_succeeded_predicate, hresult_str_exception_formatter, std::runtime_error>;
+using safe_com_throwing_handler = throwing::generic_adapter_handler<is_hresult_succeeded_predicate, throwing::generic_exception_maker<hresult_str_exception_formatter, std::runtime_error>>;
 
 constexpr auto CoInitialize     = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::CoInitialize, safe_com_throwing_handler );
 constexpr auto CoCreateGuid     = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::CoCreateGuid, safe_com_throwing_handler );
