@@ -23,7 +23,7 @@ struct adapter;
 template <auto* adaptee_func, typename... Args, typename RetValAdapter>
 struct adapter<adaptee_func, std::tuple<Args...>, RetValAdapter>
 {
-  static auto retval_adapted_func( Args... args )
+  static auto retval_mapped_func( Args... args )
   {
     return RetValAdapter()( adaptee_func( std::forward<Args>( args )... ) );
   }
@@ -57,7 +57,7 @@ template <auto* adaptee_func, typename RetValAdapter>
 constexpr auto* map_retval()
 {
   using ArgsTuple = boost::callable_traits::args_t<decltype(adaptee_func)>;
-  return &retval::details::adapter<adaptee_func, ArgsTuple, RetValAdapter>::retval_adapted_func;
+  return &retval::details::adapter<adaptee_func, ArgsTuple, RetValAdapter>::retval_mapped_func;
 }
 
 }  // namespace return_adapters

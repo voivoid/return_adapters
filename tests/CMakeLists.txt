@@ -1,11 +1,11 @@
-set(tests_dir ${CMAKE_CURRENT_SOURCE_DIR})
-add_executable(return_adapters_tests ${tests_dir}/main.cpp
-                                     ${tests_dir}/non_throwing_adapter.cpp
-                                     ${tests_dir}/throwing_adapter.cpp
-                                     ${tests_dir}/retval_adapter.cpp
-                                     ${tests_dir}/out_retval_adapter.cpp
-                                     ${tests_dir}/raii_adapter.cpp
-                                     ${tests_dir}/test_utils.h)
+add_executable(return_adapters_tests main.cpp
+                                     exception_adapter.cpp
+                                     non_throwing_adapter.cpp
+                                     throwing_adapter.cpp
+                                     retval_adapter.cpp
+                                     out_retval_adapter.cpp
+                                     raii_adapter.cpp
+                                     test_utils.h)
 
 
 target_link_libraries(return_adapters_tests PRIVATE return_adapters Catch2::lib)
