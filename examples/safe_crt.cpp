@@ -15,10 +15,10 @@ using safe_crt_throwing_handler =
     throwing::generic_adapter_handler<retval_predicate>;
 
 constexpr auto fclose  = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fclose, safe_crt_throwing_handler<check_retval_is_zero> );
-constexpr auto feof    = retval::adapt<::feof, check_retval_is_zero>();
-constexpr auto ferror  = retval::adapt<::ferror, retval::to_optional<check_retval_is_not_zero>>();
+constexpr auto feof    = map_retval<::feof, check_retval_is_zero>();
+constexpr auto ferror  = map_retval<::ferror, retval::to_optional<check_retval_is_not_zero>>();
 constexpr auto fflush  = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fflush, safe_crt_throwing_handler<check_retval_is_zero> );
-constexpr auto fgetc   = retval::adapt<::fgetc, retval::to_optional<check_retval_is_not_<EOF>>>();
+constexpr auto fgetc   = map_retval<::fgetc, retval::to_optional<check_retval_is_not_<EOF>>>();
 constexpr auto fgetpos = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fgetpos, safe_crt_throwing_handler<check_retval_is_zero> );
 constexpr auto fgets   = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fgets, safe_crt_throwing_handler<check_ret_ptr_is_not_null> );
 constexpr auto fopen   = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fopen, safe_crt_throwing_handler<check_ret_ptr_is_not_null> );

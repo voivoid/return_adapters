@@ -10,10 +10,11 @@ using namespace return_adapters;
 namespace
 {
 
-template <auto* adaptee_func, typename Ret, typename... Args>
+template <auto* adaptee_func, typename Ret>
 struct handle_any_exception_handler
 {
-  void operator()( Args... args ) const
+  template <typename... Args>
+  static void handle( Args&&... args )
   {
     try
     {
@@ -29,52 +30,52 @@ struct handle_any_exception_handler
 
 TEST_CASE( "Calling non-throwing adapted non-void functions", "non_throwing_adapter" )
 {
-  constexpr auto* dec_if_positive = non_throwing::adapt<ra_tests::dec_if_positive>();
-  REQUIRE( dec_if_positive );
+  constexpr auto* adapted_dec_if_positive = make_non_throwing<ra_tests::dec_if_positive>();
+  REQUIRE( adapted_dec_if_positive );
 
   SECTION( "The adaptee function throws no exception" )
   {
-    auto result = dec_if_positive( 10 );
+    auto result = adapted_dec_if_positive( 10 );
     REQUIRE( result );
     CHECK( *result == 9 );
   }
 
-  SECTION( "the adaptee function throws a std exception" )
+  SECTION( "The adaptee function throws a std exception and it's caught" )
   {
-    auto result = dec_if_positive( 0 );
+    auto result = adapted_dec_if_positive( 0 );
     CHECK( !result );
   }
 }
 
 TEST_CASE( "Calling a non-throwing adapted void functions", "non_throwing_adapter" )
 {
-  constexpr auto* almost_non_throwing_function = non_throwing::adapt<ra_tests::throwing_function>();
-  REQUIRE( almost_non_throwing_function );
+  constexpr auto* adapted_throwing_function = make_non_throwing<ra_tests::throwing_function>();
+  REQUIRE( adapted_throwing_function );
 
   SECTION( "The adaptee function throws no exception" )
   {
-    auto result = almost_non_throwing_function( ra_tests::throw_mode::dont_throw_exception );
+    auto result = adapted_throwing_function( ra_tests::throw_mode::dont_throw_exception );
     CHECK( result );
   }
 
-  SECTION( "The adaptee function throws a std exception" )
+  SECTION( "The adaptee function throws a std exception and it's caught" )
   {
-    auto result = almost_non_throwing_function( ra_tests::throw_mode::throw_std_exception );
+    auto result = adapted_throwing_function( ra_tests::throw_mode::throw_std_exception );
     CHECK( !result );
   }
 
-  SECTION( "The adaptee function throws a non-std exception" )
+  SECTION( "The adaptee function throws a non-std exception and it's not caught" )
   {
-    CHECK_THROWS_AS( almost_non_throwing_function( ra_tests::throw_mode::throw_non_std_exception ), ra_tests::non_std_exception );
+    CHECK_THROWS_AS( adapted_throwing_function( ra_tests::throw_mode::throw_non_std_exception ), ra_tests::non_std_exception );
   }
 }
 
 TEST_CASE( "Calling a non-throwing adapted functions with custom handler", "non_throwing_adapter" )
 {
-  constexpr auto* non_throwing_function = non_throwing::adapt<ra_tests::throwing_function, handle_any_exception_handler>();
-  REQUIRE( non_throwing_function );
+  constexpr auto* adapted_throwing_function = make_non_throwing<ra_tests::throwing_function, handle_any_exception_handler>();
+  REQUIRE( adapted_throwing_function );
 
-  CHECK_NOTHROW( non_throwing_function( ra_tests::throw_mode::throw_std_exception ) );
-  CHECK_NOTHROW( non_throwing_function( ra_tests::throw_mode::throw_non_std_exception ) );
-  CHECK_NOTHROW( non_throwing_function( ra_tests::throw_mode::dont_throw_exception ) );
+  CHECK_NOTHROW( adapted_throwing_function( ra_tests::throw_mode::throw_std_exception ) );
+  CHECK_NOTHROW( adapted_throwing_function( ra_tests::throw_mode::throw_non_std_exception ) );
+  CHECK_NOTHROW( adapted_throwing_function( ra_tests::throw_mode::dont_throw_exception ) );
 }

@@ -16,62 +16,69 @@ namespace non_throwing
 
 namespace details
 {
-template <auto* adaptee_func, typename Ret, typename... Args>
+
+template <auto* adaptee_func, typename Ret, typename ArgsTuple, template <auto*, typename> class ExceptionHandler>
+struct adapter;
+
+template <auto* adaptee_func, typename Ret, typename... Args, template <auto*, typename> class ExceptionHandler>
+struct adapter<adaptee_func, Ret, std::tuple<Args...>, ExceptionHandler>
+{
+  static auto non_throwing_func( Args... args )
+  {
+    return ExceptionHandler<adaptee_func, Ret>::handle(std::forward<Args>(args)...);
+  }
+};
+
+}  // namespace details
+
+template <auto* adaptee_func, typename Ret, typename ExceptionToCatch = std::exception>
 struct generic_exception_handler
 {
-  std::optional<Ret> operator()( Args... args ) const
+  template <typename... Args>
+  static std::optional<Ret> handle( Args&&... args )
   {
     try
     {
-      return adaptee_func( std::forward<Args>( args )... );
+      return adaptee_func(std::forward<Args>(args)...);
     }
-    catch ( std::exception& )
+    catch ( const ExceptionToCatch& )
     {
       return {};
     }
   }
 };
 
-template <auto* adaptee_func, typename... Args>
-struct generic_exception_handler<adaptee_func, void, Args...>
+template <auto* adaptee_func, typename ExceptionToCatch>
+struct generic_exception_handler<adaptee_func, void, ExceptionToCatch>
 {
-  bool operator()( Args... args ) const
+  template <typename... Args>
+  static bool handle( Args&&... args )
   {
     try
     {
-      adaptee_func( std::forward<Args>( args )... );
+      adaptee_func(std::forward<Args>(args)...);
       return true;
     }
-    catch ( std::exception& )
+    catch (const ExceptionToCatch&)
     {
       return false;
     }
   }
 };
 
-template <auto* adaptee_func, typename Ret, typename ArgsTuple, template <auto*, typename, typename...> class Handler>
-struct adapter;
-
-template <auto* adaptee_func, typename Ret, typename... Args, template <auto*, typename, typename...> class Handler>
-struct adapter<adaptee_func, Ret, std::tuple<Args...>, Handler>
-{
-  static auto non_throwing_func( Args... args )
-  {
-    return Handler<adaptee_func, Ret, Args...>()( std::forward<Args>( args )... );
-  }
-};
-}  // namespace details
-
-
-
-template <auto* func, template <auto*, typename, typename...> class Handler = details::generic_exception_handler>
-constexpr auto* adapt()
-{
-  using FuncType = decltype( func );
-  return &details::adapter<func, boost::callable_traits::return_type_t<FuncType>, boost::callable_traits::args_t<FuncType>, Handler>::
-      non_throwing_func;
-}
+template <auto* adaptee_func, typename Ret>
+using std_exception_handler = generic_exception_handler<adaptee_func, Ret, std::exception>;
 
 }  // namespace non_throwing
+
+template <auto* adaptee_func, template <auto*, typename> class Handler = non_throwing::std_exception_handler>
+constexpr auto* make_non_throwing()
+{
+  using FuncType = decltype(adaptee_func);
+  using RetType = boost::callable_traits::return_type_t<FuncType>;
+  using ArgsTuple = boost::callable_traits::args_t<FuncType>;
+
+  return &non_throwing::details::adapter<adaptee_func, RetType, ArgsTuple, Handler>::non_throwing_func;
+}
 
 }  // namespace return_adapters

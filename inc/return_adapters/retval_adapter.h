@@ -10,11 +10,13 @@
 
 namespace return_adapters
 {
+
 namespace retval
 {
 
 namespace details
 {
+
 template <auto* adaptee_func, typename ArgsTuple, typename RetValAdapter>
 struct adapter;
 
@@ -39,6 +41,7 @@ struct to_optional
   {
     using AdaptedType = std::decay_t<decltype( Transform{}( std::forward<T>( retval ) ) )>;
     using Optional    = std::optional<AdaptedType>;
+
     if ( Predicate{}( retval ) )
     {
       return Optional{ Transform{}( std::forward<T>( retval ) ) };
@@ -48,11 +51,13 @@ struct to_optional
   }
 };
 
-template <auto* func, typename RetValAdapter>
-constexpr auto* adapt()
+}  // namespace retval
+
+template <auto* adaptee_func, typename RetValAdapter>
+constexpr auto* map_retval()
 {
-  return &details::adapter<func, boost::callable_traits::args_t<decltype( func )>, RetValAdapter>::retval_adapted_func;
+  using ArgsTuple = boost::callable_traits::args_t<decltype(adaptee_func)>;
+  return &retval::details::adapter<adaptee_func, ArgsTuple, RetValAdapter>::retval_adapted_func;
 }
 
-}  // namespace retval
 }  // namespace return_adapters

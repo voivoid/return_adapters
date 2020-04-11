@@ -7,6 +7,7 @@
 
 namespace return_adapters
 {
+
 namespace raii
 {
 
@@ -29,12 +30,12 @@ struct adapter_to_custom_unique_ptr
   }
 };
 
-template <auto* func, typename RaiiAdapter = adapter_to_unique_ptr>
+template <auto* adaptee_func, typename RAIIadapter = adapter_to_unique_ptr>
 constexpr auto* adapt()
 {
-  return retval::adapt<func, RaiiAdapter>();
+  return map_retval<adaptee_func, RAIIadapter>();
 }
 
-
 }  // namespace raii
+
 }  // namespace return_adapters
