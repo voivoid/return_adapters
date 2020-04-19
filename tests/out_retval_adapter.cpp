@@ -26,34 +26,34 @@ TEST_CASE( "Check 'out_retval_optional_adapter' with 'check_retval_is_true' pred
 
   {
     constexpr auto adapted_div =
-      turn_outarg_to_optional_retval<&ra_tests::divide_with_1st_out_arg, check_retval_is_true, out_retval::first_arg>();
-    REQUIRE(adapted_div);
+        turn_outarg_to_optional_retval<&ra_tests::divide_with_1st_out_arg, check_retval_is_true, out_retval::first_arg>();
+    REQUIRE( adapted_div );
 
     {
-      std::optional<int> result = adapted_div(6, 2);
-      CHECK(result);
-      CHECK(*result == 3);
+      std::optional<int> result = adapted_div( 6, 2 );
+      CHECK( result );
+      CHECK( *result == 3 );
     }
 
     {
-      std::optional<int> result = adapted_div(6, 0);
-      CHECK(!result);
+      std::optional<int> result = adapted_div( 6, 0 );
+      CHECK( !result );
     }
   }
 
   {
     constexpr auto adapted_div = turn_outarg_to_optional_retval<&ra_tests::divide_with_outref, check_retval_is_true>();
-    REQUIRE(adapted_div);
+    REQUIRE( adapted_div );
 
     {
-      std::optional<int> result = adapted_div(6, 2);
-      CHECK(result);
-      CHECK(*result == 3);
+      std::optional<int> result = adapted_div( 6, 2 );
+      CHECK( result );
+      CHECK( *result == 3 );
     }
 
     {
-      std::optional<int> result = adapted_div(6, 0);
-      CHECK(!result);
+      std::optional<int> result = adapted_div( 6, 0 );
+      CHECK( !result );
     }
   }
 }

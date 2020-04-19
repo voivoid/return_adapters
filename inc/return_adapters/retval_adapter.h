@@ -56,7 +56,7 @@ struct to_optional
 template <auto* adaptee_func, typename RetValAdapter>
 constexpr auto* map_retval()
 {
-  using ArgsTuple = boost::callable_traits::args_t<decltype(adaptee_func)>;
+  using ArgsTuple = boost::callable_traits::args_t<decltype( adaptee_func )>;
   return &retval::details::adapter<adaptee_func, ArgsTuple, RetValAdapter>::retval_mapped_func;
 }
 

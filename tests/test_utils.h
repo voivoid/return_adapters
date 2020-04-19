@@ -88,11 +88,11 @@ inline bool divide( int a, int b, int* result )
   return false;
 }
 
-inline bool divide_with_outref(int a, int b, int& result)
+inline bool divide_with_outref( int a, int b, int& result )
 {
-  int r = 0;
-  const bool success = divide(a, b, &r);
-  result = r;
+  int r              = 0;
+  const bool success = divide( a, b, &r );
+  result             = r;
 
   return success;
 }

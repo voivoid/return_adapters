@@ -11,8 +11,7 @@ namespace safe_crt
 using namespace return_adapters;
 
 template <typename retval_predicate>
-using safe_crt_throwing_handler =
-    throwing::generic_adapter_handler<retval_predicate>;
+using safe_crt_throwing_handler = throwing::generic_adapter_handler<retval_predicate>;
 
 constexpr auto fclose  = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fclose, safe_crt_throwing_handler<check_retval_is_zero> );
 constexpr auto feof    = map_retval<::feof, check_retval_is_zero>();

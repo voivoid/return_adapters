@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.17)
 
 project(ReturnAdapters LANGUAGES CXX)
 
@@ -19,7 +19,7 @@ if(WIN32)
   target_compile_options(return_adapters INTERFACE /permissive-)
 endif()
 
-set(headers_dir ${CMAKE_CURRENT_SOURCE_DIR}/inc/return_adapters)
+set(headers_dir inc/return_adapters)
 target_sources(return_adapters INTERFACE ${headers_dir}/non_throwing_adapter.h
                                          ${headers_dir}/throwing_adapter.h
                                          ${headers_dir}/retval_adapter.h
@@ -50,16 +50,4 @@ if(RETURN_ADAPTERS_BUILD_EXAMPLES)
   add_subdirectory(examples)
 endif()
 
-
-# clang-format
-
-find_program(ClangFormat clang-format)
-if(ClangFormat)
-  get_target_property(LibSources return_adapters INTERFACE_SOURCES)
-  get_target_property(TestsSources return_adapters_tests SOURCES)
-  get_target_property(ExamplesSources return_adapters_examples SOURCES)
-
-  add_custom_target(clangformat
-    COMMAND clang-format -style=file -i ${LibSources} ${TestsSources} ${ExamplesSources}
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-endif()
+include(cmake/clangformat.cmake)

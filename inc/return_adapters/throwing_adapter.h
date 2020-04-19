@@ -76,18 +76,17 @@ struct errno_str_exception_formatter
   }
 };
 
-template <typename ExceptionMsgFormatter = generic_exception_formatter,
-          typename Exception = std::runtime_error>
+template <typename ExceptionMsgFormatter = generic_exception_formatter, typename Exception = std::runtime_error>
 struct generic_exception_factory
 {
   template <typename Result>
-  Exception operator()(const char* const func_name, Result result) const
+  Exception operator()( const char* const func_name, Result result ) const
   {
-    return Exception(ExceptionMsgFormatter{}(func_name, std::move(result)));
+    return Exception( ExceptionMsgFormatter{}( func_name, std::move( result ) ) );
   }
 };
 
-template <typename RetValPredicate, typename ExceptionFactory = generic_exception_factory<> >
+template <typename RetValPredicate, typename ExceptionFactory = generic_exception_factory<>>
 struct generic_adapter_handler
 {
   template <typename Result>
@@ -95,7 +94,7 @@ struct generic_adapter_handler
   {
     if ( !RetValPredicate{}( result ) )
     {
-      throw ExceptionFactory{}(func_name, std::move(result));
+      throw ExceptionFactory{}( func_name, std::move( result ) );
     }
 
     return result;
@@ -107,7 +106,7 @@ struct generic_adapter_handler
 template <auto* adaptee_func, typename AdapteeFuncName, typename RetValHandler>
 constexpr auto* make_throwing()
 {
-  using ArgsTuple = boost::callable_traits::args_t<decltype(adaptee_func)>;
+  using ArgsTuple = boost::callable_traits::args_t<decltype( adaptee_func )>;
 
   return &throwing::details::adapter<adaptee_func, ArgsTuple, AdapteeFuncName, RetValHandler>::throwing_func;
 }
@@ -116,5 +115,5 @@ constexpr auto* make_throwing()
 
 
 #define RETURN_ADAPTERS_ADAPT_TO_THROWING( func, handler ) return_adapters::make_throwing<&func, typestring_is( #func ), handler>()
-#define RETURN_ADAPTERS_ADAPT_TO_THROWING_GENERIC( func, retval_predicate )                                                             \
+#define RETURN_ADAPTERS_ADAPT_TO_THROWING_GENERIC( func, retval_predicate )                                                                \
   return_adapters::make_throwing<&func, typestring_is( #func ), return_adapters::throwing::generic_adapter_handler<retval_predicate>>()
