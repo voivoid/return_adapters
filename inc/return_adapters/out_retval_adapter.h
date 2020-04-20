@@ -85,7 +85,7 @@ struct to_optional
 };
 
 constexpr size_t first_arg = 0;
-constexpr size_t last_arg  = size_t( std::numeric_limits<size_t>::max() );
+constexpr size_t last_arg  = std::numeric_limits<size_t>::max();
 
 }  // namespace out_retval
 
