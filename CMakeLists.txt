@@ -6,7 +6,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-include(cmake/thirdparties/catch2.cmake)
 include(cmake/thirdparties/callabletraits.cmake)
 include(cmake/thirdparties/typestring.cmake)
 
@@ -34,6 +33,8 @@ target_include_directories(return_adapters INTERFACE inc)
 
 option(RETURN_ADAPTERS_BUILD_TESTS "Build unit tests" ON)
 if(RETURN_ADAPTERS_BUILD_TESTS)
+  include(cmake/thirdparties/catch2.cmake)
+
   enable_testing()
   add_subdirectory(tests)
 
