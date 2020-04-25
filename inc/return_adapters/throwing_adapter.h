@@ -5,6 +5,7 @@
 
 #include <cstring>
 #include <sstream>
+#include <tuple>
 #include <utility>
 
 namespace return_adapters
@@ -16,15 +17,35 @@ namespace throwing
 
 namespace details
 {
-template <auto* adaptee_func, typename ArgsTuple, typename AdapteeFuncName, typename RetValHandler>
+template <auto* adaptee_func, typename ArgsTuple, typename AdapteeFuncName, typename RetValHandler, typename Arg>
 struct adapter;
 
 template <auto* adaptee_func, typename... Args, typename AdapteeFuncName, typename RetValHandler>
-struct adapter<adaptee_func, std::tuple<Args...>, AdapteeFuncName, RetValHandler>
+struct adapter<adaptee_func, std::tuple<Args...>, AdapteeFuncName, RetValHandler, void>
 {
   static auto throwing_func( Args... args )
   {
     return RetValHandler()( AdapteeFuncName::data(), adaptee_func( std::forward<Args>( args )... ) );
+  }
+};
+
+template <auto* adaptee_func, typename... Args, typename AdapteeFuncName, typename RetValHandler, size_t... ArgIndices>
+struct adapter<adaptee_func, std::tuple<Args...>, AdapteeFuncName, RetValHandler, std::integer_sequence<size_t, ArgIndices...>>
+{
+  static auto throwing_func( Args... args )
+  {
+    std::tuple<Args...> tuple( std::forward<Args>( args )... );
+    return RetValHandler()( AdapteeFuncName::data(), adaptee_func( std::forward<Args>( args )... ), std::get<ArgIndices>( tuple )... );
+  }
+};
+
+template <auto* adaptee_func, typename... Args, typename AdapteeFuncName, typename RetValHandler, typename Arg>
+struct adapter<adaptee_func, std::tuple<Args...>, AdapteeFuncName, RetValHandler, Arg>
+{
+  static auto throwing_func( Args... args )
+  {
+    std::tuple<Args...> tuple( std::forward<Args>( args )... );
+    return RetValHandler()( AdapteeFuncName::data(), adaptee_func( std::forward<Args>( args )... ), std::get<Arg>( tuple ) );
   }
 };
 
@@ -103,17 +124,19 @@ struct generic_adapter_handler
 
 }  // namespace throwing
 
-template <auto* adaptee_func, typename AdapteeFuncName, typename RetValHandler>
+template <auto* adaptee_func, typename AdapteeFuncName, typename RetValHandler, typename Arg = void>
 constexpr auto* make_throwing()
 {
   using ArgsTuple = boost::callable_traits::args_t<decltype( adaptee_func )>;
 
-  return &throwing::details::adapter<adaptee_func, ArgsTuple, AdapteeFuncName, RetValHandler>::throwing_func;
+  return &throwing::details::adapter<adaptee_func, ArgsTuple, AdapteeFuncName, RetValHandler, Arg>::throwing_func;
 }
 
 }  // namespace return_adapters
 
 
 #define RETURN_ADAPTERS_ADAPT_TO_THROWING( func, handler ) return_adapters::make_throwing<&func, typestring_is( #func ), handler>()
+#define RETURN_ADAPTERS_ADAPT_TO_THROWING_WITH_ARG( func, handler, arg )                                                                   \
+  return_adapters::make_throwing<&func, typestring_is( #func ), handler, arg>()
 #define RETURN_ADAPTERS_ADAPT_TO_THROWING_GENERIC( func, retval_predicate )                                                                \
   return_adapters::make_throwing<&func, typestring_is( #func ), return_adapters::throwing::generic_adapter_handler<retval_predicate>>()

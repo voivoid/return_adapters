@@ -37,6 +37,11 @@ inline size_t dec_if_positive( const size_t val )
   throw std::runtime_error( "underflow" );
 }
 
+inline int sum( int a, float b )
+{
+  return a + b;
+}
+
 
 enum class ptr_value_to_return
 {
