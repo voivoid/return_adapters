@@ -8,6 +8,22 @@
 namespace safe_crt
 {
 
+  namespace
+  {
+    struct fread_handler
+    {
+      size_t operator()(const char* const func_name, const size_t result, const size_t fread_count_arg, FILE* const fread_stream_arg)
+      {
+        if( result != fread_count_arg && ferror( fread_stream_arg ) )
+        {
+          // TODO: throw exception
+        }
+
+        return result;
+      }
+    };
+  }
+
 using namespace return_adapters;
 
 template <typename retval_predicate>
@@ -24,7 +40,7 @@ constexpr auto fopen   = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fopen, safe_crt_th
 //             fprintf
 constexpr auto fputc = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fputc, safe_crt_throwing_handler<check_retval_is_not_<EOF>> );
 constexpr auto fputs = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fputs, safe_crt_throwing_handler<check_retval_is_not_<EOF>> );
-//             fread
+constexpr auto fread = RETURN_ADAPTERS_ADAPT_TO_THROWING_WITH_INDICES(::fread, fread_handler, 2, 3);
 constexpr auto freopen = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::freopen, safe_crt_throwing_handler<check_ret_ptr_is_not_null> );
 //             fscanf
 constexpr auto fseek = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fseek, safe_crt_throwing_handler<check_retval_is_zero> );
@@ -36,7 +52,8 @@ namespace
 
 void example()
 {
-  safe_crt::fopen( "file.txt", "r" );
+  FILE* file = safe_crt::fopen( "file.txt", "r" );
+  safe_crt::fclose(file);
 }
 
 }  // namespace

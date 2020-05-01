@@ -40,7 +40,6 @@ TEST_CASE( "Check 'make_throwing_with_arg'", "throwing_adapter" )
 
   constexpr auto* return_int_throwing = RETURN_ADAPTERS_ADAPT_TO_THROWING_WITH_ARG( ra_tests::sum, tmp_handler, float );
   CHECK( 111 == return_int_throwing( 2, 3.0 ) );
-  using Indices                        = std::integer_sequence<size_t, 0, 1>;
-  constexpr auto* return_int_throwing2 = RETURN_ADAPTERS_ADAPT_TO_THROWING_WITH_ARG( ra_tests::sum, tmp_handler, Indices );
+  constexpr auto* return_int_throwing2 = RETURN_ADAPTERS_ADAPT_TO_THROWING_WITH_INDICES( ra_tests::sum, tmp_handler, 0, 1 );
   CHECK( 222 == return_int_throwing2( 2, 3.0 ) );
 }
