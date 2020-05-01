@@ -46,7 +46,7 @@ struct out_retval_adapter_impl;
 template <auto* adaptee_func, typename OutRet, typename... ArgsBefore, typename... ArgsAfter, typename OutRetValAdapter>
 struct out_retval_adapter_impl<adaptee_func, OutRet, std::tuple<ArgsBefore...>, std::tuple<ArgsAfter...>, OutRetValAdapter>
 {
-  static auto retval_adapted_func( ArgsBefore... argsBefore, ArgsAfter... argsAfter )
+  static decltype(auto) retval_adapted_func( ArgsBefore... argsBefore, ArgsAfter... argsAfter )
   {
     OutRetArg<OutRet> arg;
     auto f_result = adaptee_func( std::forward<ArgsBefore>( argsBefore )..., arg.get(), std::forward<ArgsAfter>( argsAfter )... );

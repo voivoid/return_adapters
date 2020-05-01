@@ -23,7 +23,7 @@ struct adapter;
 template <auto* adaptee_func, typename... Args, typename RetValAdapter>
 struct adapter<adaptee_func, std::tuple<Args...>, RetValAdapter>
 {
-  static auto retval_mapped_func( Args... args )
+  static decltype(auto) retval_mapped_func( Args... args )
   {
     return RetValAdapter()( adaptee_func( std::forward<Args>( args )... ) );
   }
