@@ -90,14 +90,13 @@ constexpr size_t last_arg  = std::numeric_limits<size_t>::max();
 }  // namespace out_retval
 
 template <auto* adaptee_func, typename OutRetValAdapter, size_t out_argument = out_retval::last_arg>
-constexpr auto* turn_outarg_to_retval()
-{
-  using ArgsTuple                     = boost::callable_traits::args_t<decltype( adaptee_func )>;
-  constexpr size_t args_num           = std::tuple_size_v<ArgsTuple>;
-  constexpr size_t out_argument_index = out_argument == out_retval::last_arg ? args_num - 1 : out_argument;
-
-  return out_retval::details::adapter<adaptee_func, ArgsTuple, OutRetValAdapter, out_argument_index>::retval_adapted_func;
-}
+constexpr auto* turn_outarg_to_retval =
+    out_retval::details::adapter<adaptee_func,
+                                 boost::callable_traits::args_t<decltype( adaptee_func )>,
+                                 OutRetValAdapter,
+                                 out_argument == out_retval::last_arg ?
+                                     std::tuple_size_v<boost::callable_traits::args_t<decltype( adaptee_func )>> - 1 :
+                                     out_argument>::retval_adapted_func;
 
 template <auto* adaptee_func, typename RetChecker, size_t out_argument = out_retval::last_arg>
 constexpr auto* turn_outarg_to_optional_retval = turn_outarg_to_retval<adaptee_func, out_retval::to_optional<RetChecker>, out_argument>;

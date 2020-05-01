@@ -54,10 +54,7 @@ struct to_optional
 }  // namespace retval
 
 template <auto* adaptee_func, typename RetValAdapter>
-constexpr auto* map_retval()
-{
-  using ArgsTuple = boost::callable_traits::args_t<decltype( adaptee_func )>;
-  return &retval::details::adapter<adaptee_func, ArgsTuple, RetValAdapter>::retval_mapped_func;
-}
+constexpr auto* map_retval =
+    &retval::details::adapter<adaptee_func, boost::callable_traits::args_t<decltype( adaptee_func )>, RetValAdapter>::retval_mapped_func;
 
 }  // namespace return_adapters

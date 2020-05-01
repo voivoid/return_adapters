@@ -125,20 +125,17 @@ struct generic_adapter_handler
 }  // namespace throwing
 
 template <auto* adaptee_func, typename AdapteeFuncName, typename RetValHandler, typename Arg = void>
-constexpr auto* make_throwing()
-{
-  using ArgsTuple = boost::callable_traits::args_t<decltype( adaptee_func )>;
-
-  return &throwing::details::adapter<adaptee_func, ArgsTuple, AdapteeFuncName, RetValHandler, Arg>::throwing_func;
-}
+constexpr auto* make_throwing =
+    &throwing::details::
+        adapter<adaptee_func, boost::callable_traits::args_t<decltype( adaptee_func )>, AdapteeFuncName, RetValHandler, Arg>::throwing_func;
 
 }  // namespace return_adapters
 
 
-#define RETURN_ADAPTERS_ADAPT_TO_THROWING( func, handler ) return_adapters::make_throwing<&func, typestring_is( #func ), handler>()
+#define RETURN_ADAPTERS_ADAPT_TO_THROWING( func, handler ) return_adapters::make_throwing<&func, typestring_is( #func ), handler>
 #define RETURN_ADAPTERS_ADAPT_TO_THROWING_WITH_ARG( func, handler, arg )                                                                   \
-  return_adapters::make_throwing<&func, typestring_is( #func ), handler, arg>()
-#define RETURN_ADAPTERS_ADAPT_TO_THROWING_WITH_INDICES( func, handler, ... ) \
-  return_adapters::make_throwing<&func, typestring_is( #func ), handler, std::integer_sequence<size_t, __VA_ARGS__ >>()
+  return_adapters::make_throwing<&func, typestring_is( #func ), handler, arg>
+#define RETURN_ADAPTERS_ADAPT_TO_THROWING_WITH_INDICES( func, handler, ... )                                                               \
+  return_adapters::make_throwing<&func, typestring_is( #func ), handler, std::integer_sequence<size_t, __VA_ARGS__>>
 #define RETURN_ADAPTERS_ADAPT_TO_THROWING_GENERIC( func, retval_predicate )                                                                \
-  return_adapters::make_throwing<&func, typestring_is( #func ), return_adapters::throwing::generic_adapter_handler<retval_predicate>>()
+  return_adapters::make_throwing<&func, typestring_is( #func ), return_adapters::throwing::generic_adapter_handler<retval_predicate>>

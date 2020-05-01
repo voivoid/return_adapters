@@ -72,13 +72,9 @@ using std_exception_handler = generic_exception_handler<adaptee_func, Ret, std::
 }  // namespace non_throwing
 
 template <auto* adaptee_func, template <auto*, typename> class Handler = non_throwing::std_exception_handler>
-constexpr auto* make_non_throwing()
-{
-  using FuncType  = decltype( adaptee_func );
-  using RetType   = boost::callable_traits::return_type_t<FuncType>;
-  using ArgsTuple = boost::callable_traits::args_t<FuncType>;
-
-  return &non_throwing::details::adapter<adaptee_func, RetType, ArgsTuple, Handler>::non_throwing_func;
-}
+constexpr auto* make_non_throwing = &non_throwing::details::adapter<adaptee_func,
+                                                                    boost::callable_traits::return_type_t<decltype( adaptee_func )>,
+                                                                    boost::callable_traits::args_t<decltype( adaptee_func )>,
+                                                                    Handler>::non_throwing_func;
 
 }  // namespace return_adapters

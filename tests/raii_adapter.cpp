@@ -34,7 +34,7 @@ foo* make_foo( bool& dtor_called_flag )
 
 TEST_CASE( "Check raii adapter with default deleter", "raii_adapter" )
 {
-  constexpr auto* make_foo_adapted = raii::adapt<&make_foo>();
+  constexpr auto* make_foo_adapted = raii::adapt<&make_foo>;
 
   bool dtor_called_flag = false;
 
