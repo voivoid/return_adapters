@@ -1,6 +1,8 @@
 #pragma once
 
 #include <cassert>
+#include <cstdarg>
+#include <cstddef>
 #include <stdexcept>
 
 namespace ra_tests
@@ -105,6 +107,21 @@ inline bool divide_with_outref( int a, int b, int& result )
 inline bool divide_with_1st_out_arg( int* result, int a, int b )
 {
   return divide( a, b, result );
+}
+
+inline int add_nums( const size_t count, ... )
+{
+  int result = 0;
+
+  std::va_list args;
+  va_start( args, count );
+  for ( size_t i = 0; i < count; ++i )
+  {
+    result += va_arg( args, int );
+  }
+  va_end( args );
+
+  return result;
 }
 
 }  // namespace ra_tests

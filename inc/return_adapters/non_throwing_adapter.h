@@ -23,7 +23,7 @@ struct adapter;
 template <auto* adaptee_func, typename Ret, typename... Args, template <auto*, typename> class ExceptionHandler>
 struct adapter<adaptee_func, Ret, std::tuple<Args...>, ExceptionHandler>
 {
-  static decltype(auto) non_throwing_func( Args... args )
+  static decltype( auto ) non_throwing_func( Args... args )
   {
     return ExceptionHandler<adaptee_func, Ret>::handle( std::forward<Args>( args )... );
   }

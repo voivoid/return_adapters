@@ -23,7 +23,7 @@ struct adapter;
 template <auto* adaptee_func, typename... Args, typename AdapteeFuncName, typename RetValHandler>
 struct adapter<adaptee_func, std::tuple<Args...>, AdapteeFuncName, RetValHandler, void>
 {
-  static decltype(auto) throwing_func( Args... args )
+  static decltype( auto ) throwing_func( Args... args )
   {
     return RetValHandler()( AdapteeFuncName::data(), adaptee_func( std::forward<Args>( args )... ) );
   }
@@ -32,7 +32,7 @@ struct adapter<adaptee_func, std::tuple<Args...>, AdapteeFuncName, RetValHandler
 template <auto* adaptee_func, typename... Args, typename AdapteeFuncName, typename RetValHandler, size_t... ArgIndices>
 struct adapter<adaptee_func, std::tuple<Args...>, AdapteeFuncName, RetValHandler, std::integer_sequence<size_t, ArgIndices...>>
 {
-  static decltype(auto) throwing_func( Args... args )
+  static decltype( auto ) throwing_func( Args... args )
   {
     std::tuple<Args...> tuple( std::forward<Args>( args )... );
     return RetValHandler()( AdapteeFuncName::data(), adaptee_func( std::forward<Args>( args )... ), std::get<ArgIndices>( tuple )... );
@@ -42,7 +42,7 @@ struct adapter<adaptee_func, std::tuple<Args...>, AdapteeFuncName, RetValHandler
 template <auto* adaptee_func, typename... Args, typename AdapteeFuncName, typename RetValHandler, typename Arg>
 struct adapter<adaptee_func, std::tuple<Args...>, AdapteeFuncName, RetValHandler, Arg>
 {
-  static decltype(auto) throwing_func( Args... args )
+  static decltype( auto ) throwing_func( Args... args )
   {
     std::tuple<Args...> tuple( std::forward<Args>( args )... );
     return RetValHandler()( AdapteeFuncName::data(), adaptee_func( std::forward<Args>( args )... ), std::get<Arg>( tuple ) );
@@ -111,7 +111,7 @@ template <typename RetValPredicate, typename ExceptionFactory = generic_exceptio
 struct generic_adapter_handler
 {
   template <typename Result>
-  decltype(auto) operator()( const char* const func_name, Result&& result ) const
+  decltype( auto ) operator()( const char* const func_name, Result&& result ) const
   {
     if ( !RetValPredicate{}( result ) )
     {

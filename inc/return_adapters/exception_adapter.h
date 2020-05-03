@@ -15,7 +15,7 @@ struct adapter;
 template <auto* adaptee_func, typename... Args, typename ExceptionTransformer>
 struct adapter<adaptee_func, std::tuple<Args...>, ExceptionTransformer>
 {
-  static decltype(auto) exception_mapped_func( Args... args )
+  static decltype( auto ) exception_mapped_func( Args... args )
   {
     try
     {
