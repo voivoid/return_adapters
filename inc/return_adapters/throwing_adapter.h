@@ -1,6 +1,7 @@
 #pragma once
 
 #include "boost/callable_traits/args.hpp"
+#include "boost/callable_traits/has_varargs.hpp"
 #include "typestring.hh"
 
 #include <cstring>
@@ -17,11 +18,11 @@ namespace throwing
 
 namespace details
 {
-template <auto* adaptee_func, typename ArgsTuple, typename AdapteeFuncName, typename RetValHandler, typename Arg>
+template <auto* adaptee_func, typename ArgsTuple, bool VarArgs, typename AdapteeFuncName, typename RetValHandler, typename ArgToHandler>
 struct adapter;
 
 template <auto* adaptee_func, typename... Args, typename AdapteeFuncName, typename RetValHandler>
-struct adapter<adaptee_func, std::tuple<Args...>, AdapteeFuncName, RetValHandler, void>
+struct adapter<adaptee_func, std::tuple<Args...>, false, AdapteeFuncName, RetValHandler, void>
 {
   static decltype( auto ) throwing_func( Args... args )
   {
@@ -29,24 +30,46 @@ struct adapter<adaptee_func, std::tuple<Args...>, AdapteeFuncName, RetValHandler
   }
 };
 
-template <auto* adaptee_func, typename... Args, typename AdapteeFuncName, typename RetValHandler, size_t... ArgIndices>
-struct adapter<adaptee_func, std::tuple<Args...>, AdapteeFuncName, RetValHandler, std::integer_sequence<size_t, ArgIndices...>>
+template <auto* adaptee_func, typename... Args, typename AdapteeFuncName, typename RetValHandler, size_t... ArgToHandlerIndices>
+struct adapter<adaptee_func,
+               std::tuple<Args...>,
+               false,
+               AdapteeFuncName,
+               RetValHandler,
+               std::integer_sequence<size_t, ArgToHandlerIndices...>>
 {
   static decltype( auto ) throwing_func( Args... args )
   {
     std::tuple<Args...> tuple( std::forward<Args>( args )... );
-    return RetValHandler()( AdapteeFuncName::data(), adaptee_func( std::forward<Args>( args )... ), std::get<ArgIndices>( tuple )... );
+    return RetValHandler()(
+        AdapteeFuncName::data(), adaptee_func( std::forward<Args>( args )... ), std::get<ArgToHandlerIndices>( tuple )... );
   }
 };
 
-template <auto* adaptee_func, typename... Args, typename AdapteeFuncName, typename RetValHandler, typename Arg>
-struct adapter<adaptee_func, std::tuple<Args...>, AdapteeFuncName, RetValHandler, Arg>
+template <auto* adaptee_func, typename... Args, typename AdapteeFuncName, typename RetValHandler, typename ArgToHandler>
+struct adapter<adaptee_func, std::tuple<Args...>, false, AdapteeFuncName, RetValHandler, ArgToHandler>
 {
   static decltype( auto ) throwing_func( Args... args )
   {
     std::tuple<Args...> tuple( std::forward<Args>( args )... );
-    return RetValHandler()( AdapteeFuncName::data(), adaptee_func( std::forward<Args>( args )... ), std::get<Arg>( tuple ) );
+    return RetValHandler()( AdapteeFuncName::data(), adaptee_func( std::forward<Args>( args )... ), std::get<ArgToHandler>( tuple ) );
   }
+};
+
+template <auto* adaptee_func, typename... Args, typename AdapteeFuncName, typename RetValHandler, typename ArgToHandler>
+struct adapter<adaptee_func, std::tuple<Args...>, true, AdapteeFuncName, RetValHandler, ArgToHandler>
+{
+  struct impl
+  {
+    template <typename... VarArgs>
+    auto operator()( Args... args, VarArgs... var_args ) const
+    {
+      return details::adapter<adaptee_func, std::tuple<Args..., VarArgs...>, false, AdapteeFuncName, RetValHandler, ArgToHandler>::
+          throwing_func( std::forward<Args>( args )..., std::forward<VarArgs>( var_args )... );
+    }
+  };
+
+  inline static const auto throwing_func = impl{};
 };
 
 inline std::string get_errno_string()
@@ -124,10 +147,13 @@ struct generic_adapter_handler
 
 }  // namespace throwing
 
-template <auto* adaptee_func, typename AdapteeFuncName, typename RetValHandler, typename Arg = void>
-constexpr auto* make_throwing =
-    &throwing::details::
-        adapter<adaptee_func, boost::callable_traits::args_t<decltype( adaptee_func )>, AdapteeFuncName, RetValHandler, Arg>::throwing_func;
+template <auto* adaptee_func, typename AdapteeFuncName, typename RetValHandler, typename ArgToHandler = void>
+constexpr auto make_throwing = throwing::details::adapter<adaptee_func,
+                                                          boost::callable_traits::args_t<decltype( adaptee_func )>,
+                                                          boost::callable_traits::has_varargs_v<decltype( adaptee_func )>,
+                                                          AdapteeFuncName,
+                                                          RetValHandler,
+                                                          ArgToHandler>::throwing_func;
 
 }  // namespace return_adapters
 

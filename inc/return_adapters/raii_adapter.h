@@ -11,7 +11,7 @@ namespace return_adapters
 namespace raii
 {
 
-struct adapter_to_unique_ptr
+struct to_unique_ptr
 {
   template <typename T>
   auto operator()( T* retval ) const
@@ -21,7 +21,7 @@ struct adapter_to_unique_ptr
 };
 
 template <typename Deleter>
-struct adapter_to_custom_unique_ptr
+struct to_unique_ptr_with_deleter_
 {
   template <typename T>
   auto operator()( T* retval ) const
@@ -30,7 +30,17 @@ struct adapter_to_custom_unique_ptr
   }
 };
 
-template <auto* adaptee_func, typename RAIIadapter = adapter_to_unique_ptr>
+template <auto* DeleteFunc>
+struct to_unique_ptr_with_deleter_func_
+{
+  template <typename T>
+  auto operator()( T* retval ) const
+  {
+    return std::unique_ptr<std::remove_pointer_t<T>, decltype(DeleteFunc)>( retval, DeleteFunc );
+  }
+};
+
+template <auto* adaptee_func, typename RAIIadapter = to_unique_ptr>
 constexpr auto* adapt = map_retval<adaptee_func, RAIIadapter>;
 
 }  // namespace raii
