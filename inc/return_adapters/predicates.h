@@ -1,6 +1,7 @@
 #pragma once
 
 #include <utility>
+#include <functional>
 
 namespace return_adapters
 {

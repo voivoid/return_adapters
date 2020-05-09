@@ -2,13 +2,13 @@ include(ExternalProject)
 
 find_package(Git REQUIRED)
 
-set(Catch2Ver v2.11.3)
+set(Catch2Ver v2.12.1)
 
 ExternalProject_Add(
   get_catch2
   PREFIX thirdparties
   URL https://github.com/catchorg/Catch2/archive/${Catch2Ver}.zip
-  URL_HASH SHA256=c5a0a7510379c6f37f70b329986a335a7b8489d67ac417ce8f4262d0cae4cc5d
+  URL_HASH SHA256=cd139306f63404df38bf8413c4cb284aa9c23c917044c9a1e170f1854626a502
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ""
   INSTALL_COMMAND ""
