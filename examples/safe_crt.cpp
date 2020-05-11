@@ -12,14 +12,35 @@ namespace
 {
 struct fread_handler
 {
-  size_t operator()( const char* const func_name, const size_t result, const size_t fread_count_arg, FILE* const fread_stream_arg )
+  auto operator()( const char* const /*func_name*/,
+                   const size_t fread_result,
+                   const size_t fread_count_arg,
+                   FILE* const fread_stream_arg ) const
   {
-    if ( result != fread_count_arg && ferror( fread_stream_arg ) )
+    if ( fread_result != fread_count_arg && ferror( fread_stream_arg ) )
     {
       // TODO: throw exception
     }
 
-    return result;
+    return fread_result;
+  }
+};
+
+struct fscanf_handler
+{
+  template <typename... VarArgs>
+  auto operator()( const char* const /*func_name*/,
+                   const int fscanf_result,
+                   FILE* const /*fscanf_stream_arg*/,
+                   const char* const /*fscanf_format_arg*/,
+                   VarArgs... fscanf_var_args ) const
+  {
+    if ( fscanf_result == EOF || fscanf_result != sizeof...( fscanf_var_args ) )
+    {
+      // TODO: throw exception
+    }
+
+    return fscanf_result;
   }
 };
 }  // namespace
@@ -43,7 +64,7 @@ constexpr auto fputc   = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fputc, safe_crt_th
 constexpr auto fputs   = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fputs, safe_crt_throwing_handler<check_retval_is_not_<EOF>> );
 constexpr auto fread   = RETURN_ADAPTERS_ADAPT_TO_THROWING_WITH_INDICES( ::fread, fread_handler, 2, 3 );
 constexpr auto freopen = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::freopen, safe_crt_throwing_handler<check_ret_ptr_is_not_null> );
-constexpr auto fscanf  = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fscanf, safe_crt_throwing_handler<check_retval_is_not_<EOF>> );
+constexpr auto fscanf  = RETURN_ADAPTERS_ADAPT_TO_THROWING_WITH_ALL_ARGS( ::fscanf, fscanf_handler );
 constexpr auto fseek   = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fseek, safe_crt_throwing_handler<check_retval_is_zero> );
 
 }  // namespace safe_crt
