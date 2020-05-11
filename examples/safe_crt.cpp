@@ -43,8 +43,8 @@ constexpr auto fputc   = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fputc, safe_crt_th
 constexpr auto fputs   = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fputs, safe_crt_throwing_handler<check_retval_is_not_<EOF>> );
 constexpr auto fread   = RETURN_ADAPTERS_ADAPT_TO_THROWING_WITH_INDICES( ::fread, fread_handler, 2, 3 );
 constexpr auto freopen = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::freopen, safe_crt_throwing_handler<check_ret_ptr_is_not_null> );
-constexpr auto fscanf = RETURN_ADAPTERS_ADAPT_TO_THROWING(::fscanf, safe_crt_throwing_handler<check_retval_is_not_<EOF>>);
-constexpr auto fseek = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fseek, safe_crt_throwing_handler<check_retval_is_zero> );
+constexpr auto fscanf  = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fscanf, safe_crt_throwing_handler<check_retval_is_not_<EOF>> );
+constexpr auto fseek   = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fseek, safe_crt_throwing_handler<check_retval_is_zero> );
 
 }  // namespace safe_crt
 
@@ -53,7 +53,7 @@ namespace
 
 void example()
 {
-  auto file = safe_crt::fopen( "file.txt", "w" ); // returns std::unique_ptr<FILE> with ::fclose deleter
+  auto file = safe_crt::fopen( "file.txt", "w" );  // returns std::unique_ptr<FILE> with ::fclose deleter
   safe_crt::fprintf( file.get(), "HELLO, %s\n", "WORLD" );
 }
 

@@ -36,7 +36,7 @@ struct to_unique_ptr_with_deleter_func_
   template <typename T>
   auto operator()( T* retval ) const
   {
-    return std::unique_ptr<std::remove_pointer_t<T>, decltype(DeleteFunc)>( retval, DeleteFunc );
+    return std::unique_ptr<std::remove_pointer_t<T>, decltype( DeleteFunc )>( retval, DeleteFunc );
   }
 };
 
