@@ -15,6 +15,10 @@ namespace return_adapters
 namespace throwing
 {
 
+struct grab_all_args
+{
+};
+
 
 namespace details
 {
@@ -53,6 +57,15 @@ struct adapter<adaptee_func, std::tuple<Args...>, false, AdapteeFuncName, RetVal
   {
     std::tuple<Args...> tuple( std::forward<Args>( args )... );
     return RetValHandler()( AdapteeFuncName::data(), adaptee_func( std::forward<Args>( args )... ), std::get<ArgToHandler>( tuple ) );
+  }
+};
+
+template <auto* adaptee_func, typename... Args, typename AdapteeFuncName, typename RetValHandler>
+struct adapter<adaptee_func, std::tuple<Args...>, false, AdapteeFuncName, RetValHandler, grab_all_args>
+{
+  static decltype( auto ) throwing_func( Args... args )
+  {
+    return RetValHandler()( AdapteeFuncName::data(), adaptee_func( std::forward<Args>( args )... ), std::forward<Args>( args )... );
   }
 };
 
@@ -161,6 +174,8 @@ constexpr auto make_throwing = throwing::details::adapter<adaptee_func,
 #define RETURN_ADAPTERS_ADAPT_TO_THROWING( func, handler ) return_adapters::make_throwing<&func, typestring_is( #func ), handler>
 #define RETURN_ADAPTERS_ADAPT_TO_THROWING_WITH_ARG( func, handler, arg )                                                                   \
   return_adapters::make_throwing<&func, typestring_is( #func ), handler, arg>
+#define RETURN_ADAPTERS_ADAPT_TO_THROWING_WITH_ALL_ARGS( func, handler )                                                                   \
+  return_adapters::make_throwing<&func, typestring_is( #func ), handler, throwing::grab_all_args>
 #define RETURN_ADAPTERS_ADAPT_TO_THROWING_WITH_INDICES( func, handler, ... )                                                               \
   return_adapters::make_throwing<&func, typestring_is( #func ), handler, std::integer_sequence<size_t, __VA_ARGS__>>
 #define RETURN_ADAPTERS_ADAPT_TO_THROWING_GENERIC( func, retval_predicate )                                                                \
