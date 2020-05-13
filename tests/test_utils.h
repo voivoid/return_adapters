@@ -5,6 +5,54 @@
 #include <cstddef>
 #include <stdexcept>
 
+namespace return_adapters
+{
+namespace test_utils
+{
+template <typename Ret, typename Arg>
+Ret dummy( Arg )
+{
+  throw;
+}
+
+enum class error_code
+{
+  success = 0,
+  unknown,
+  permission_denied
+};
+
+inline error_code read_file( error_code code_to_return )
+{
+  return code_to_return;
+}
+
+template <typename Ret, typename A1, typename A2>
+Ret sum( A1 a1, A2 a2 )
+{
+  return a1 + a2;
+}
+
+inline int sum_varargs( const size_t count, ... )
+{
+  int result = 0;
+
+  std::va_list args;
+  va_start( args, count );
+  for ( size_t i = 0; i < count; ++i )
+  {
+    result += va_arg( args, int );
+  }
+  va_end( args );
+
+  return result;
+}
+
+}  // namespace test_utils
+}  // namespace return_adapters
+
+
+
 namespace ra_tests
 {
 

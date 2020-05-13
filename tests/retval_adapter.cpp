@@ -4,38 +4,105 @@
 #include "return_adapters/retval_adapter.h"
 #include "test_utils.h"
 
+#include <cmath>
+#include <tuple>
 #include <type_traits>
 
 using namespace return_adapters;
 
-TEST_CASE( "Check retval adapter with 'check_retval_is_zero' predicate", "retval_adapter" )
+namespace
 {
-  constexpr auto adapted = map_retval<&ra_tests::ret_int_take_int, check_retval_is_zero>;
-  static_assert( std::is_same<bool ( *const )( int ), decltype( adapted )>::value, "Adapted type mismatches" );
 
-  REQUIRE( adapted );
+const double nan_value = std::numeric_limits<double>::quiet_NaN();
 
-  CHECK( adapted( 0 ) );
-  CHECK( !adapted( -1 ) );
-
-  // TODO: test all ret_int_take_int combinations
+struct map_result_to_double
+{
+  double operator()( const int v ) const
   {
-    constexpr auto* adapted = map_retval<&ra_tests::ret_int_take_intref, check_retval_is_zero>;
-    static_assert( std::is_same<bool ( *const )( int& ), decltype( adapted )>::value, "Adapted type mismatches" );
+    return static_cast<double>( v );
   }
+};
 
+struct check_is_not_nan
+{
+  bool operator()( const double d ) const
   {
-    constexpr auto* adapted = map_retval<&ra_tests::ret_int_take_intcref, check_retval_is_zero>;
-    static_assert( std::is_same<bool ( *const )( const int& ), decltype( adapted )>::value, "Adapted type mismatches" );
+    return !std::isnan( d );
   }
+};
+
+}  // namespace
+
+TEST_CASE( "Adapted function returns true if error_code is success, false otherwise", "retval_adapter" )
+{
+  constexpr auto adapted = map_retval<&test_utils::read_file, check_retval_is_<test_utils::error_code::success>>;
+  STATIC_REQUIRE( adapted );
+  STATIC_REQUIRE( std::is_same<bool ( *const )( test_utils::error_code ), decltype( adapted )>::value );
+
+  CHECK( adapted( test_utils::error_code::success ) );
+  CHECK( !adapted( test_utils::error_code::unknown ) );
+  CHECK( !adapted( test_utils::error_code::permission_denied ) );
 }
 
-TEST_CASE( "Check varargs retval adapter", "retval_adapter" )
+TEST_CASE( "Adapted function returns a sum mapped to double", "retval_adapter" )
 {
-  constexpr auto adapted = map_retval<&ra_tests::add_nums, check_retval_is_zero>;
+  constexpr int ( *sum_ints )( int, int ) = &test_utils::sum<int, int, int>;
 
-  CHECK( false == adapted( 5, 1, 2, 3, 4, 5 ) );   // sum of these numbrers are not zero
-  CHECK( true == adapted( 5, 1, 2, 3, 4, -10 ) );  // sum of these numbrers are zero
+  constexpr auto adapted = map_retval<sum_ints, map_result_to_double>;
+  STATIC_REQUIRE( adapted );
+  STATIC_REQUIRE( std::is_same<double ( *const )( int, int ), decltype( adapted )>::value );
+
+  CHECK( Approx( 0.0 ) == adapted( -1, 1 ) );
+  CHECK( Approx( 3.0 ) == adapted( 1, 2 ) );
 }
 
-// TODO: write tests to to_optional adapter
+TEST_CASE( "Adapted function returns empty std::optional if result is NaN value", "retval_adapter" )
+{
+  constexpr auto adapted = map_retval<&test_utils::sum<double, double, double>, retval::to_optional<check_is_not_nan>>;
+  STATIC_REQUIRE( adapted );
+  STATIC_REQUIRE( std::is_same<std::optional<double> ( *const )( double, double ), decltype( adapted )>::value );
+
+  const auto result = adapted( -2.0, -3.0 );
+  REQUIRE(result);
+  CHECK( Approx( -5.0 ) == *result);
+
+  CHECK( !adapted( 1, nan_value ) );
+  CHECK( !adapted( nan_value, 1 ) );
+}
+
+TEMPLATE_TEST_CASE( "Static check adapted function types",
+                    "retval_adapter",
+                    (std::tuple<int, int>),
+                    (std::tuple<int&, int&>),
+                    (std::tuple<int&&, int&&>),
+                    (std::tuple<int, int&>),
+                    (std::tuple<int&, int>),
+                    (std::tuple<int, int&&>),
+                    (std::tuple<int&&, int>),
+                    (std::tuple<int&, int&&>),
+                    (std::tuple<int&&, int&>))
+{
+  using Ret = std::tuple_element_t<0, TestType>;
+  using Arg = std::tuple_element_t<1, TestType>;
+
+  struct dummy_handler
+  {
+    Ret operator()( Ret ) const
+    {
+      throw;
+    };
+  };
+
+  constexpr auto adapted = map_retval<&test_utils::dummy<Ret, Arg>, dummy_handler>;
+  STATIC_REQUIRE( adapted );
+  STATIC_REQUIRE( std::is_same<Ret ( *const )( Arg ), decltype( adapted )>::value );
+}
+
+TEST_CASE( "Adapted function returns sum of varargs", "retval_adapter" )
+{
+  constexpr auto adapted = map_retval<&test_utils::sum_varargs, check_retval_is_zero>;
+
+  const size_t num_of_args = 5;
+  CHECK( adapted( num_of_args, 1, 2, 3, 4, -10 ) );  // sum of these numbrers are zero
+  CHECK( !adapted( num_of_args, 1, 2, 3, 4, 5 ) );   // sum of these numbrers are not zero
+}
