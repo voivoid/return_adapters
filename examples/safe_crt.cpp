@@ -10,37 +10,23 @@ namespace safe_crt
 
 namespace
 {
-struct fread_handler
+struct check_fread_result
 {
-  auto operator()( const char* const /*func_name*/,
-                   const size_t fread_result,
-                   const size_t fread_count_arg,
-                   FILE* const fread_stream_arg ) const
+  auto operator()( const size_t fread_result, const size_t fread_count_arg, FILE* const fread_stream_arg ) const
   {
-    if ( fread_result != fread_count_arg && ferror( fread_stream_arg ) )
-    {
-      // TODO: throw exception
-    }
-
-    return fread_result;
+    return fread_result == fread_count_arg || !ferror( fread_stream_arg );
   }
 };
 
-struct fscanf_handler
+struct check_fscanf_result
 {
   template <typename... VarArgs>
-  auto operator()( const char* const /*func_name*/,
-                   const int fscanf_result,
+  auto operator()( const int fscanf_result,
                    FILE* const /*fscanf_stream_arg*/,
                    const char* const /*fscanf_format_arg*/,
                    VarArgs... fscanf_var_args ) const
   {
-    if ( fscanf_result == EOF || fscanf_result != sizeof...( fscanf_var_args ) )
-    {
-      // TODO: throw exception
-    }
-
-    return fscanf_result;
+    return fscanf_result != EOF && fscanf_result == sizeof...( fscanf_var_args );
   }
 };
 }  // namespace
@@ -63,9 +49,9 @@ constexpr auto fopen =
 constexpr auto fprintf = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fprintf, safe_crt_throwing_handler<check_retval_is_less_zero> );
 constexpr auto fputc   = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fputc, safe_crt_throwing_handler<check_retval_is_not_<EOF>> );
 constexpr auto fputs   = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fputs, safe_crt_throwing_handler<check_retval_is_not_<EOF>> );
-constexpr auto fread   = RETURN_ADAPTERS_ADAPT_TO_THROWING_WITH_INDICES( ::fread, fread_handler, 2, 3 );
+constexpr auto fread   = RETURN_ADAPTERS_ADAPT_TO_THROWING_WITH_INDICES( ::fread, safe_crt_throwing_handler<check_fread_result>, 2, 3 );
 constexpr auto freopen = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::freopen, safe_crt_throwing_handler<check_ret_ptr_is_not_null> );
-constexpr auto fscanf  = RETURN_ADAPTERS_ADAPT_TO_THROWING_WITH_ALL_ARGS( ::fscanf, fscanf_handler );
+constexpr auto fscanf  = RETURN_ADAPTERS_ADAPT_TO_THROWING_WITH_ALL_ARGS( ::fscanf, safe_crt_throwing_handler<check_fscanf_result> );
 constexpr auto fseek   = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fseek, safe_crt_throwing_handler<check_retval_is_zero> );
 
 }  // namespace safe_crt

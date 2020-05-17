@@ -146,10 +146,10 @@ struct generic_exception_factory
 template <typename RetValPredicate, typename ExceptionFactory = generic_exception_factory<>>
 struct generic_adapter_handler
 {
-  template <typename Result>
-  decltype( auto ) operator()( const char* const func_name, Result&& result ) const
+  template <typename Result, typename... Args>
+  decltype( auto ) operator()( const char* const func_name, Result&& result, const Args&... args ) const
   {
-    if ( !RetValPredicate{}( result ) )
+    if ( !RetValPredicate{}( result, args... ) )
     {
       throw ExceptionFactory{}( func_name, std::move( result ) );
     }
