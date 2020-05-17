@@ -9,39 +9,70 @@ using namespace return_adapters;
 
 namespace
 {
-struct foo
+struct Resource
 {
-  foo( bool& dtor_called_flag ) : m_dtor_called_flag( dtor_called_flag )
+  Resource( bool& is_destructed ) : _is_destructed( is_destructed )
   {
-    assert( !m_dtor_called_flag );
-  }
-
-  ~foo()
-  {
-    m_dtor_called_flag = true;
-  }
-
-private:
-  bool& m_dtor_called_flag;
+    assert( !is_destructed );
+  };
+  bool& _is_destructed;
 };
 
-foo* make_foo( bool& dtor_called_flag )
+struct ResourceWithDtor : private Resource
 {
-  return new foo( dtor_called_flag );
+  using Resource::Resource;
+  ~ResourceWithDtor()
+  {
+    _is_destructed = true;
+  }
+};
+
+template <typename R>
+R* alloc_resource( bool& is_destructed )
+{
+  return new R( is_destructed );
 }
 
+void free_resource( Resource* resource )
+{
+  resource->_is_destructed = true;
+  delete resource;
+}
+
+struct free_resource_deleter
+{
+  void operator()( Resource* resource ) const
+  {
+    free_resource( resource );
+  }
+};
 }  // namespace
 
-TEST_CASE( "Check raii adapter with default deleter", "raii_adapter" )
+template <auto adapted>
+void check_resource_is_freed()
 {
-  constexpr auto* make_foo_adapted = raii::adapt<&make_foo>;
+  STATIC_REQUIRE( adapted );
 
-  bool dtor_called_flag = false;
-
+  bool is_destructed = false;
   {
-    auto foo = make_foo_adapted( dtor_called_flag );
-    CHECK( !dtor_called_flag );
+    auto resource = adapted( is_destructed );
   }
 
-  CHECK( dtor_called_flag );
+  CHECK( is_destructed );
 }
+
+REGISTER_TEST_CASE( check_resource_is_freed<to_unique_ptr<&alloc_resource<ResourceWithDtor>>>,
+                    "Adapt return value to unique_ptr",
+                    "[raii_adapter]" );
+
+REGISTER_TEST_CASE( check_resource_is_freed<to_shared_ptr<&alloc_resource<ResourceWithDtor>>>,
+                    "Adapt return value to shared_ptr",
+                    "[raii_adapter]" );
+
+REGISTER_TEST_CASE( (check_resource_is_freed<to_unique_ptr_with_f_deleter<&alloc_resource<Resource>, free_resource>>),
+                    "Adapt return value to unique_ptr with function deleter",
+                    "[raii_adapter]" );
+
+REGISTER_TEST_CASE( (check_resource_is_freed<to_unique_ptr_with_deleter<&alloc_resource<Resource>, free_resource_deleter>>),
+                    "Adapt return value to unique_ptr with deleter",
+                    "[raii_adapter]" );

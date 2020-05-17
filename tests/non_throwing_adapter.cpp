@@ -28,7 +28,7 @@ struct handle_any_exception_handler
 
 }  // namespace
 
-TEST_CASE( "Calling non-throwing adapted non-void functions", "non_throwing_adapter" )
+TEST_CASE( "Calling non-throwing adapted non-void functions", "[non_throwing_adapter]" )
 {
   constexpr auto* adapted_dec_if_positive = make_non_throwing<ra_tests::dec_if_positive>;
   REQUIRE( adapted_dec_if_positive );
@@ -47,7 +47,7 @@ TEST_CASE( "Calling non-throwing adapted non-void functions", "non_throwing_adap
   }
 }
 
-TEST_CASE( "Calling a non-throwing adapted void functions", "non_throwing_adapter" )
+TEST_CASE( "Calling a non-throwing adapted void functions", "[non_throwing_adapter]" )
 {
   constexpr auto* adapted_throwing_function = make_non_throwing<ra_tests::throwing_function>;
   REQUIRE( adapted_throwing_function );
@@ -70,7 +70,7 @@ TEST_CASE( "Calling a non-throwing adapted void functions", "non_throwing_adapte
   }
 }
 
-TEST_CASE( "Calling a non-throwing adapted functions with custom handler", "non_throwing_adapter" )
+TEST_CASE( "Calling a non-throwing adapted functions with custom handler", "[non_throwing_adapter]" )
 {
   constexpr auto* adapted_throwing_function = make_non_throwing<ra_tests::throwing_function, handle_any_exception_handler>;
   REQUIRE( adapted_throwing_function );

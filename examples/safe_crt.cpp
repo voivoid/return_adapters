@@ -57,8 +57,9 @@ constexpr auto fflush  = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fflush, safe_crt_t
 constexpr auto fgetc   = map_retval<::fgetc, retval::to_optional<check_retval_is_not_<EOF>>>;
 constexpr auto fgetpos = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fgetpos, safe_crt_throwing_handler<check_retval_is_zero> );
 constexpr auto fgets   = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fgets, safe_crt_throwing_handler<check_ret_ptr_is_not_null> );
-constexpr auto fopen   = raii::adapt<RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fopen, safe_crt_throwing_handler<check_ret_ptr_is_not_null> ),
-                                   raii::to_unique_ptr_with_deleter_func_<safe_crt::fclose>>;
+constexpr auto fopen =
+    to_unique_ptr_with_f_deleter<RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fopen, safe_crt_throwing_handler<check_ret_ptr_is_not_null> ),
+                                 safe_crt::fclose>;
 constexpr auto fprintf = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fprintf, safe_crt_throwing_handler<check_retval_is_less_zero> );
 constexpr auto fputc   = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fputc, safe_crt_throwing_handler<check_retval_is_not_<EOF>> );
 constexpr auto fputs   = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fputs, safe_crt_throwing_handler<check_retval_is_not_<EOF>> );
@@ -74,7 +75,7 @@ namespace
 
 void example()
 {
-  auto file = safe_crt::fopen( "file.txt", "w" );  // returns std::unique_ptr<FILE> with ::fclose deleter
+  auto file = safe_crt::fopen( "file.txt", "w" );  // returns std::unique_ptr<FILE> with safe_crt::fclose deleter
   safe_crt::fprintf( file.get(), "HELLO, %s\n", "WORLD" );
 }
 

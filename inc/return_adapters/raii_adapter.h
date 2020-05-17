@@ -8,41 +8,49 @@
 namespace return_adapters
 {
 
-namespace raii
-{
-
-struct to_unique_ptr
+template <template <typename... Args> class smart_ptr, typename... SmartPtrArgs>
+struct to_smart_ptr
 {
   template <typename T>
   auto operator()( T* retval ) const
   {
-    return std::unique_ptr<std::remove_pointer_t<T>>( retval );
+    return smart_ptr<std::remove_pointer_t<T>, SmartPtrArgs...>( retval );
   }
 };
+
+namespace details
+{
+template <auto* DeleterFunction>
+struct deleter_function
+{
+  template <typename T>
+  void operator()( T* const ptr ) const
+  {
+    DeleterFunction( ptr );
+  }
+};
+
+using to_unique_ptr = to_smart_ptr<std::unique_ptr>;
+using to_shared_ptr = to_smart_ptr<std::shared_ptr>;
 
 template <typename Deleter>
-struct to_unique_ptr_with_deleter_
-{
-  template <typename T>
-  auto operator()( T* retval ) const
-  {
-    return std::unique_ptr<std::remove_pointer_t<T>, Deleter>( retval );
-  }
-};
+using to_unique_ptr_with_deleter = to_smart_ptr<std::unique_ptr, Deleter>;
 
-template <auto* DeleteFunc>
-struct to_unique_ptr_with_deleter_func_
-{
-  template <typename T>
-  auto operator()( T* retval ) const
-  {
-    return std::unique_ptr<std::remove_pointer_t<T>, decltype( DeleteFunc )>( retval, DeleteFunc );
-  }
-};
+template <auto* DeleterFunc>
+using to_unique_ptr_with_f_deleter = to_unique_ptr_with_deleter<details::deleter_function<DeleterFunc>>;
 
-template <auto* adaptee_func, typename RAIIadapter = to_unique_ptr>
-constexpr auto* adapt = map_retval<adaptee_func, RAIIadapter>;
+}  // namespace details
 
-}  // namespace raii
+template <auto* adaptee_func>
+constexpr auto* to_unique_ptr = map_retval<adaptee_func, details::to_unique_ptr>;
+
+template <auto* adaptee_func>
+constexpr auto* to_shared_ptr = map_retval<adaptee_func, details::to_shared_ptr>;
+
+template <auto* adaptee_func, typename deleter>
+constexpr auto* to_unique_ptr_with_deleter = map_retval<adaptee_func, details::to_unique_ptr_with_deleter<deleter>>;
+
+template <auto* adaptee_func, auto* deleter_func>
+constexpr auto* to_unique_ptr_with_f_deleter = map_retval<adaptee_func, details::to_unique_ptr_with_f_deleter<deleter_func>>;
 
 }  // namespace return_adapters

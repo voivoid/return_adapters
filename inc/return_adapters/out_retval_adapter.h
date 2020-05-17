@@ -3,6 +3,7 @@
 #include "boost/callable_traits/args.hpp"
 #include "tuple_utils.h"
 
+#include <limits>
 #include <optional>
 #include <tuple>
 

@@ -24,7 +24,7 @@ struct tmp_handler
 };
 }  // namespace
 
-TEST_CASE( "Check 'generic_adapter_handler' with 'check_retval_is_not_zero' predicate", "throwing_adapter" )
+TEST_CASE( "Check 'generic_adapter_handler' with 'check_retval_is_not_zero' predicate", "[throwing_adapter]" )
 {
   constexpr auto* return_int_throwing = RETURN_ADAPTERS_ADAPT_TO_THROWING_GENERIC( ra_tests::ret_int_take_int, check_retval_is_not_zero );
   REQUIRE( return_int_throwing );
@@ -34,7 +34,7 @@ TEST_CASE( "Check 'generic_adapter_handler' with 'check_retval_is_not_zero' pred
   CHECK_THROWS_WITH( return_int_throwing( 0 ), "ra_tests::ret_int_take_int failed; returned value: 0" );
 }
 
-TEST_CASE( "Check 'make_throwing_with_arg'", "throwing_adapter" )
+TEST_CASE( "Check 'make_throwing_with_arg'", "[throwing_adapter]" )
 {
   // TODO: write tests
 

@@ -6,7 +6,7 @@
 
 using namespace return_adapters;
 
-TEST_CASE( "Check 'out_retval_optional_adapter' with 'check_retval_is_true' predicate", "out_retval_adapter" )
+TEST_CASE( "Check 'out_retval_optional_adapter' with 'check_retval_is_true' predicate", "[out_retval_adapter]" )
 {
   constexpr auto adapted_div = turn_outarg_to_optional_retval<&ra_tests::divide, check_retval_is_true>;
   REQUIRE( adapted_div );

@@ -29,7 +29,7 @@ struct exception_transformer
 };
 }  // namespace
 
-TEST_CASE( "test map_exception", "exception_adapter" )
+TEST_CASE( "test map_exception", "[exception_adapter]" )
 {
   constexpr auto* adapted = map_exception<&ra_tests::throwing_function, exception_transformer>;
   REQUIRE( adapted );
