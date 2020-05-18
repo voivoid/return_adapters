@@ -46,7 +46,7 @@ struct free_resource_deleter
     free_resource( resource );
   }
 };
-}  // namespace
+
 
 template <auto adapted>
 void check_resource_is_freed()
@@ -76,3 +76,5 @@ REGISTER_TEST_CASE( (check_resource_is_freed<to_unique_ptr_with_f_deleter<&alloc
 REGISTER_TEST_CASE( (check_resource_is_freed<to_unique_ptr_with_deleter<&alloc_resource<Resource>, free_resource_deleter>>),
                     "Adapt return value to unique_ptr with deleter",
                     "[raii_adapter]" );
+
+}  // namespace

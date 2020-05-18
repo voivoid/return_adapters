@@ -70,7 +70,7 @@ TEST_CASE( "Adapted function returns empty std::optional if result is NaN value"
   CHECK( !adapted( nan_value, 1 ) );
 }
 
-TEMPLATE_TEST_CASE( "Static check adapted function types",
+TEMPLATE_TEST_CASE( "Static check map_retval adapted function types",
                     "[retval_adapter]",
                     (std::tuple<int, int>),
                     (std::tuple<int&, int&>),

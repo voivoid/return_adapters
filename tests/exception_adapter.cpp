@@ -6,16 +6,17 @@
 #include <stdexcept>
 
 using namespace return_adapters;
+using namespace test_utils;
 
 namespace
 {
-struct my_exception
+struct my_exception : std::exception
 {
 };
 
-struct exception_transformer
+struct std_exception_to_my_exception
 {
-  void operator()()
+  void operator()() const
   {
     try
     {
@@ -27,14 +28,15 @@ struct exception_transformer
     }
   }
 };
-}  // namespace
 
 TEST_CASE( "test map_exception", "[exception_adapter]" )
 {
-  constexpr auto* adapted = map_exception<&ra_tests::throwing_function, exception_transformer>;
+  constexpr auto* adapted = map_exception<&throwing_function, std_exception_to_my_exception>;
   REQUIRE( adapted );
 
-  CHECK_NOTHROW( adapted( ra_tests::throw_mode::dont_throw_exception ) );
-  CHECK_THROWS_AS( adapted( ra_tests::throw_mode::throw_std_exception ), my_exception );
-  CHECK_THROWS_AS( adapted( ra_tests::throw_mode::throw_non_std_exception ), ra_tests::non_std_exception );
+  CHECK_NOTHROW( adapted( throw_mode::dont_throw ) );
+  CHECK_THROWS_AS( adapted( throw_mode::throw_std_based ), my_exception );
+  CHECK_THROWS_AS( adapted( throw_mode::throw_non_std_based ), non_std_based_exception );
 }
+
+}  // namespace

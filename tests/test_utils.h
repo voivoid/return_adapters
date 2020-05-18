@@ -48,6 +48,54 @@ inline int sum_varargs( const size_t count, ... )
   return result;
 }
 
+enum class throw_mode
+{
+  throw_std_based,
+  throw_non_std_based,
+  dont_throw
+};
+
+class non_std_based_exception
+{
+};
+
+inline void throwing_function( const throw_mode mode )
+{
+  if ( mode == throw_mode::throw_std_based )
+  {
+    throw std::runtime_error( "test exception" );
+  }
+  else if ( mode == throw_mode::throw_non_std_based )
+  {
+    throw non_std_based_exception();
+  }
+  else
+  {
+    assert( mode == throw_mode::dont_throw );
+  }
+}
+
+template <typename Arg, typename OutArg>
+inline bool divide( const Arg a, const Arg b, OutArg const result )
+{
+  if ( b != 0 )
+  {
+    if constexpr ( std::is_pointer_v<OutArg> )
+    {
+      assert( result );
+      *result = a / b;
+    }
+    else
+    {
+      result = a / b;
+    }
+
+    return true;
+  }
+
+  return false;
+}
+
 }  // namespace test_utils
 }  // namespace return_adapters
 
@@ -128,33 +176,6 @@ inline void throwing_function( const throw_mode mode )
   {
     throw non_std_exception();
   }
-}
-
-inline bool divide( int a, int b, int* result )
-{
-  assert( result );
-
-  if ( b != 0 )
-  {
-    *result = a / b;
-    return true;
-  }
-
-  return false;
-}
-
-inline bool divide_with_outref( int a, int b, int& result )
-{
-  int r              = 0;
-  const bool success = divide( a, b, &r );
-  result             = r;
-
-  return success;
-}
-
-inline bool divide_with_1st_out_arg( int* result, int a, int b )
-{
-  return divide( a, b, result );
 }
 
 inline int add_nums( const size_t count, ... )

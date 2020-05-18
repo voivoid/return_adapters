@@ -22,7 +22,7 @@ struct tmp_handler
     return 222;
   }
 };
-}  // namespace
+
 
 TEST_CASE( "Check 'generic_adapter_handler' with 'check_retval_is_not_zero' predicate", "[throwing_adapter]" )
 {
@@ -43,3 +43,5 @@ TEST_CASE( "Check 'make_throwing_with_arg'", "[throwing_adapter]" )
   constexpr auto* return_int_throwing2 = RETURN_ADAPTERS_ADAPT_TO_THROWING_WITH_INDICES( ra_tests::sum, tmp_handler, 0, 1 );
   CHECK( 222 == return_int_throwing2( 2, 3.0 ) );
 }
+
+}  // namespace
