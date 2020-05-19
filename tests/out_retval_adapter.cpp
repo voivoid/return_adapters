@@ -4,25 +4,26 @@
 #include "return_adapters/predicates.h"
 #include "test_utils.h"
 
+#include <tuple>
+
 using namespace return_adapters;
-using namespace test_utils;
 
 namespace
 {
 
 inline bool divide_with_1st_out_arg( int* result, int a, int b )
 {
-  return divide<int, int*>( a, b, result );
+  return test_utils::divide<int, int*>( a, b, result );
 }
 
 inline bool divide_with_2nd_out_arg( int a, int* result, int b )
 {
-  return divide<int, int*>( a, b, result );
+  return test_utils::divide<int, int*>( a, b, result );
 }
 
 inline bool divide_with_3rd_out_arg( int a, int b, int* result )
 {
-  return divide<int, int*>( a, b, result );
+  return test_utils::divide<int, int*>( a, b, result );
 }
 
 template <auto adapted>
@@ -37,11 +38,11 @@ void check_out_retval_is_returned()
   CHECK( !adapted( 6, 0 ) );
 }
 
-REGISTER_TEST_CASE( (check_out_retval_is_returned<turn_outarg_to_optional_retval<&divide<int, int*>, check_retval_is_true>>),
+REGISTER_TEST_CASE( (check_out_retval_is_returned<turn_outarg_to_optional_retval<&test_utils::divide<int, int*>, check_retval_is_true>>),
                     "Check out return value pointer",
                     "[out_retval_adapter]" );
 
-REGISTER_TEST_CASE( (check_out_retval_is_returned<turn_outarg_to_optional_retval<&divide<int, int&>, check_retval_is_true>>),
+REGISTER_TEST_CASE( (check_out_retval_is_returned<turn_outarg_to_optional_retval<&test_utils::divide<int, int&>, check_retval_is_true>>),
                     "Check out return value reference",
                     "[out_retval_adapter]" );
 
@@ -81,7 +82,7 @@ TEMPLATE_TEST_CASE( "Static check turn_outarg_to_optional_retval adapted functio
   using OutArg = std::tuple_element_t<2, TestType>;
 
 
-  constexpr auto adapted = turn_outarg_to_optional_retval<&divide<Arg, OutArg>, check_retval_is_true>;
+  constexpr auto adapted = turn_outarg_to_optional_retval<&test_utils::divide<Arg, OutArg>, check_retval_is_true>;
   STATIC_REQUIRE( adapted );
   STATIC_REQUIRE( std::is_same<std::optional<Ret> ( *const )( Arg, Arg ), decltype( adapted )>::value );
 }

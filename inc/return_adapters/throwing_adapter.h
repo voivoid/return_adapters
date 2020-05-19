@@ -30,7 +30,10 @@ struct adapter<adaptee_func, std::tuple<Args...>, false, AdapteeFuncName, RetVal
 {
   static decltype( auto ) throwing_func( Args... args )
   {
-    return RetValHandler()( AdapteeFuncName::data(), adaptee_func( std::forward<Args>( args )... ) );
+    decltype( auto ) ret = adaptee_func( std::forward<Args>( args )... );
+    RetValHandler()( AdapteeFuncName::data(), ret );
+
+    return static_cast<decltype( ret )>( ret );
   }
 };
 
@@ -44,9 +47,12 @@ struct adapter<adaptee_func,
 {
   static decltype( auto ) throwing_func( Args... args )
   {
-    std::tuple<Args...> tuple( std::forward<Args>( args )... );
-    return RetValHandler()(
-        AdapteeFuncName::data(), adaptee_func( std::forward<Args>( args )... ), std::get<ArgToHandlerIndices>( tuple )... );
+    std::tuple<Args&...> tuple( args... );
+    decltype( auto ) ret = adaptee_func( std::forward<Args>( args )... );
+
+    RetValHandler()( AdapteeFuncName::data(), ret, std::get<ArgToHandlerIndices>( tuple )... );
+
+    return static_cast<decltype( ret )>( ret );
   }
 };
 
@@ -55,8 +61,11 @@ struct adapter<adaptee_func, std::tuple<Args...>, false, AdapteeFuncName, RetVal
 {
   static decltype( auto ) throwing_func( Args... args )
   {
-    std::tuple<Args...> tuple( std::forward<Args>( args )... );
-    return RetValHandler()( AdapteeFuncName::data(), adaptee_func( std::forward<Args>( args )... ), std::get<ArgToHandler>( tuple ) );
+    std::tuple<Args&...> tuple( args... );
+    decltype( auto ) ret = adaptee_func( std::forward<Args>( args )... );
+    RetValHandler()( AdapteeFuncName::data(), ret, std::get<ArgToHandler&>( tuple ) );
+
+    return static_cast<decltype( ret )>( ret );
   }
 };
 
@@ -65,7 +74,10 @@ struct adapter<adaptee_func, std::tuple<Args...>, false, AdapteeFuncName, RetVal
 {
   static decltype( auto ) throwing_func( Args... args )
   {
-    return RetValHandler()( AdapteeFuncName::data(), adaptee_func( std::forward<Args>( args )... ), std::forward<Args>( args )... );
+    decltype( auto ) ret = adaptee_func( std::forward<Args>( args )... );
+    RetValHandler()( AdapteeFuncName::data(), ret, args... );
+
+    return static_cast<decltype( ret )>( ret );
   }
 };
 
@@ -133,7 +145,9 @@ struct errno_str_exception_formatter
   }
 };
 
-template <typename ExceptionMsgFormatter = generic_exception_formatter, typename Exception = std::runtime_error>
+using generic_exception = std::runtime_error;
+
+template <typename ExceptionMsgFormatter = generic_exception_formatter, typename Exception = generic_exception>
 struct generic_exception_factory
 {
   template <typename Result>
@@ -153,8 +167,6 @@ struct generic_adapter_handler
     {
       throw ExceptionFactory{}( func_name, std::move( result ) );
     }
-
-    return std::forward<Result>( result );
   }
 };
 

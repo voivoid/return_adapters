@@ -6,7 +6,6 @@
 #include <stdexcept>
 
 using namespace return_adapters;
-using namespace test_utils;
 
 namespace
 {
@@ -31,12 +30,12 @@ struct std_exception_to_my_exception
 
 TEST_CASE( "test map_exception", "[exception_adapter]" )
 {
-  constexpr auto* adapted = map_exception<&throwing_function, std_exception_to_my_exception>;
+  constexpr auto* adapted = map_exception<&test_utils::throwing_function, std_exception_to_my_exception>;
   REQUIRE( adapted );
 
-  CHECK_NOTHROW( adapted( throw_mode::dont_throw ) );
-  CHECK_THROWS_AS( adapted( throw_mode::throw_std_based ), my_exception );
-  CHECK_THROWS_AS( adapted( throw_mode::throw_non_std_based ), non_std_based_exception );
+  CHECK_NOTHROW( adapted(test_utils::throw_mode::dont_throw ) );
+  CHECK_THROWS_AS( adapted(test_utils::throw_mode::throw_std_based ), my_exception );
+  CHECK_THROWS_AS( adapted(test_utils::throw_mode::throw_non_std_based ), test_utils::non_std_based_exception );
 }
 
 }  // namespace

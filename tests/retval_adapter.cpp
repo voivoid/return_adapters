@@ -35,7 +35,7 @@ struct check_is_not_nan
 
 TEST_CASE( "Adapted function returns true if error_code is success, false otherwise", "[retval_adapter]" )
 {
-  constexpr auto adapted = map_retval<&test_utils::read_file, check_retval_is_<test_utils::error_code::success>>;
+  constexpr auto adapted = map_retval<&test_utils::read_file, test_utils::check_is_success>;
   STATIC_REQUIRE( adapted );
   STATIC_REQUIRE( std::is_same<bool ( *const )( test_utils::error_code ), decltype( adapted )>::value );
 

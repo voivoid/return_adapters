@@ -44,11 +44,12 @@ struct id
   }
 };
 
-using check_retval_is_zero      = check_retval_is_<0>;
-using check_retval_is_nullptr   = check_retval_is_<nullptr>;
-using check_retval_is_true      = check_retval_is_<true>;
-using check_retval_is_not_zero  = check_retval_is_not_<0>;
-using check_ret_ptr_is_not_null = check_retval_is_not_<nullptr>;
-using check_retval_is_less_zero = check_retval_is_less_<0>;
+using check_retval_is_zero         = check_retval_is_<0>;
+using check_retval_is_nullptr      = check_retval_is_<nullptr>;
+using check_retval_is_true         = check_retval_is_<true>;
+using check_retval_is_not_zero     = check_retval_is_not_<0>;
+using check_ret_ptr_is_not_null    = check_retval_is_not_<nullptr>;
+using check_retval_is_less_zero    = check_retval_is_less_<0>;
+using check_retval_is_not_negative = negate<check_retval_is_less_<0>>;
 
 }  // namespace return_adapters

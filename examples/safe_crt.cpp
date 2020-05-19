@@ -46,7 +46,7 @@ constexpr auto fgets   = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fgets, safe_crt_th
 constexpr auto fopen =
     to_unique_ptr_with_f_deleter<RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fopen, safe_crt_throwing_handler<check_ret_ptr_is_not_null> ),
                                  safe_crt::fclose>;
-constexpr auto fprintf = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fprintf, safe_crt_throwing_handler<check_retval_is_less_zero> );
+constexpr auto fprintf = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fprintf, safe_crt_throwing_handler<check_retval_is_not_negative> );
 constexpr auto fputc   = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fputc, safe_crt_throwing_handler<check_retval_is_not_<EOF>> );
 constexpr auto fputs   = RETURN_ADAPTERS_ADAPT_TO_THROWING( ::fputs, safe_crt_throwing_handler<check_retval_is_not_<EOF>> );
 constexpr auto fread   = RETURN_ADAPTERS_ADAPT_TO_THROWING_WITH_INDICES( ::fread, safe_crt_throwing_handler<check_fread_result>, 2, 3 );
