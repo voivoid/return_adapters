@@ -6,6 +6,7 @@
 #include <cstdarg>
 #include <cstddef>
 #include <iosfwd>
+#include <limits>
 #include <stdexcept>
 
 namespace return_adapters
@@ -103,9 +104,10 @@ inline bool divide( const Arg a, const Arg b, OutArg const result )
   return false;
 }
 
-inline size_t decrement_unsigned( const size_t val )
+template <typename T>
+inline T decrement( T val )
 {
-  if ( val > 0 )
+  if ( val > std::numeric_limits<T>::min() )
   {
     return val - 1;
   }

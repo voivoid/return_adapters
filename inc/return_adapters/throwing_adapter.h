@@ -31,7 +31,7 @@ struct adapter<adaptee_func, std::tuple<Args...>, false, AdapteeFuncName, RetVal
   static decltype( auto ) throwing_func( Args... args )
   {
     decltype( auto ) ret = adaptee_func( std::forward<Args>( args )... );
-    RetValHandler()( AdapteeFuncName::data(), ret );
+    RetValHandler{}( AdapteeFuncName::data(), std::move( ret ) );
 
     return static_cast<decltype( ret )>( ret );
   }
@@ -50,7 +50,7 @@ struct adapter<adaptee_func,
     std::tuple<Args&...> tuple( args... );
     decltype( auto ) ret = adaptee_func( std::forward<Args>( args )... );
 
-    RetValHandler()( AdapteeFuncName::data(), ret, std::get<ArgToHandlerIndices>( tuple )... );
+    RetValHandler{}( AdapteeFuncName::data(), std::move( ret ), std::get<ArgToHandlerIndices>( tuple )... );
 
     return static_cast<decltype( ret )>( ret );
   }
@@ -63,7 +63,7 @@ struct adapter<adaptee_func, std::tuple<Args...>, false, AdapteeFuncName, RetVal
   {
     std::tuple<Args&...> tuple( args... );
     decltype( auto ) ret = adaptee_func( std::forward<Args>( args )... );
-    RetValHandler()( AdapteeFuncName::data(), ret, std::get<ArgToHandler&>( tuple ) );
+    RetValHandler{}( AdapteeFuncName::data(), std::move( ret ), std::get<ArgToHandler&>( tuple ) );
 
     return static_cast<decltype( ret )>( ret );
   }
@@ -75,7 +75,7 @@ struct adapter<adaptee_func, std::tuple<Args...>, false, AdapteeFuncName, RetVal
   static decltype( auto ) throwing_func( Args... args )
   {
     decltype( auto ) ret = adaptee_func( std::forward<Args>( args )... );
-    RetValHandler()( AdapteeFuncName::data(), ret, args... );
+    RetValHandler{}( AdapteeFuncName::data(), std::move( ret ), args... );
 
     return static_cast<decltype( ret )>( ret );
   }
@@ -130,7 +130,7 @@ struct generic_exception_formatter
 struct errno_exception_formatter
 {
   template <typename Result>
-  std::string operator()( const char* const adaptee_func_name, const Result ) const
+  std::string operator()( const char* const adaptee_func_name, const Result& ) const
   {
     return details::format_error_message( adaptee_func_name, "errno", errno );
   }

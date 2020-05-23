@@ -12,9 +12,9 @@ template <template <typename... Args> class smart_ptr, typename... SmartPtrArgs>
 struct to_smart_ptr
 {
   template <typename T>
-  auto operator()( T* retval ) const
+  auto operator()( T* const retval ) const
   {
-    return smart_ptr<std::remove_pointer_t<T>, SmartPtrArgs...>( retval );
+    return smart_ptr<T, SmartPtrArgs...>( retval );
   }
 };
 

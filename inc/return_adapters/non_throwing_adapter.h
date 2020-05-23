@@ -39,7 +39,7 @@ struct generic_exception_handler
   {
     try
     {
-      return adaptee_func( std::forward<Args>( args )... );
+      return { adaptee_func( std::forward<Args>( args )... ) };
     }
     catch ( const ExceptionToCatch& )
     {
