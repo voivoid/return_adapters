@@ -6,6 +6,7 @@
 #include <limits>
 #include <optional>
 #include <tuple>
+#include <utility>
 
 #include <cassert>
 
@@ -50,9 +51,8 @@ struct out_retval_adapter_impl<adaptee_func, OutRet, std::tuple<ArgsBefore...>, 
   static decltype( auto ) retval_adapted_func( ArgsBefore... argsBefore, ArgsAfter... argsAfter )
   {
     OutRetArg<OutRet> arg;
-    decltype( auto ) f_result =
-        adaptee_func( std::forward<ArgsBefore>( argsBefore )..., arg.get(), std::forward<ArgsAfter>( argsAfter )... );
-    return OutRetValAdapter{}( std::forward<decltype( f_result )>( f_result ), std::move( arg.val ) );
+    const auto& f_result = adaptee_func( std::forward<ArgsBefore>( argsBefore )..., arg.get(), std::forward<ArgsAfter>( argsAfter )... );
+    return OutRetValAdapter{}( f_result, std::move( arg.val ) );
   }
 };
 
@@ -76,9 +76,9 @@ template <typename RetChecker>
 struct to_optional
 {
   template <typename Ret, typename OutRet>
-  std::optional<OutRet> operator()( Ret&& ret, OutRet&& out_ret )
+  std::optional<OutRet> operator()( const Ret& ret, OutRet&& out_ret )
   {
-    if ( RetChecker{}( std::forward<Ret>( ret ) ) )
+    if ( RetChecker{}( ret ) )
     {
       return { std::move( out_ret ) };
     }
